@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "7WbuLqeWJUlzWhw-vBAPc"
+uri = "file://artifacts/christian-blog/public/images/bible-candle.png"
+type = "image"
+title = "Bible open with soft light"
+
+[[generated]]
+id = "kncesKJH19pPJZAc2YBHP"
+uri = "file://artifacts/christian-blog/public/images/church-light.png"
+type = "image"
+title = "Church interior light rays"
+
+[[generated]]
+id = "b8jgFA0FJHt60xPlv-xgl"
+uri = "file://artifacts/christian-blog/public/images/praying-hands.png"
+type = "image"
+title = "Hands praying over scripture"
