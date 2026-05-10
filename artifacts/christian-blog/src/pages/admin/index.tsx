@@ -11,11 +11,9 @@ import {
 } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Edit, Trash2, Plus, FileText, Layers, MessageCircle, Star } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -58,16 +56,16 @@ export default function Admin() {
   });
 
   const handleDeletePost = (id: number) => {
-    if (confirm("Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.")) {
+    if (confirm("Tem certeza que deseja arquivar este manuscrito? Esta ação é irreversível.")) {
       deletePost.mutate(
         { id },
         {
           onSuccess: () => {
-            toast({ title: "Artigo excluído com sucesso." });
+            toast({ title: "Manuscrito removido do arquivo." });
             queryClient.invalidateQueries({ queryKey: getListPostsQueryKey() });
           },
           onError: () => {
-            toast({ variant: "destructive", title: "Erro ao excluir artigo." });
+            toast({ variant: "destructive", title: "Erro ao processar remoção." });
           }
         }
       );
@@ -79,132 +77,133 @@ export default function Admin() {
       { data: values },
       {
         onSuccess: () => {
-          toast({ title: "Categoria criada com sucesso!" });
+          toast({ title: "Nova coleção criada com sucesso." });
           queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
           setIsCategoryDialogOpen(false);
           categoryForm.reset();
         },
         onError: () => {
-          toast({ variant: "destructive", title: "Erro ao criar categoria." });
+          toast({ variant: "destructive", title: "Erro ao criar coleção." });
         }
       }
     );
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-6xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
-        <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground">
-          Painel Administrativo
-        </h1>
-        <div className="flex items-center gap-3">
-          <Link href="/admin/novo-artigo">
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" /> Novo Artigo
-            </Button>
-          </Link>
+    <div className="container mx-auto px-6 py-16 max-w-6xl animate-in fade-in duration-1000">
+      <div className="border-b border-border pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h1 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-foreground mb-2">
+            Administração do Acervo
+          </h1>
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Gestão de publicações e coleções</p>
         </div>
+        
+        <Link href="/admin/novo-artigo">
+          <Button className="bg-transparent text-foreground border border-border hover:bg-primary/5 hover:text-primary hover:border-primary transition-colors font-mono text-[10px] uppercase tracking-widest px-6 rounded-none w-full md:w-auto h-12">
+            Escrever Novo Artigo
+          </Button>
+        </Link>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+      {/* Stats Desk */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-16 border border-border">
         {isLoadingStats ? (
-          Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+          Array(4).fill(0).map((_, i) => <div key={i} className="h-32 bg-background animate-pulse" />)
         ) : stats ? (
           <>
-            <StatCard icon={<FileText />} label="Total de Artigos" value={stats.totalPosts} />
-            <StatCard icon={<Layers />} label="Categorias" value={stats.totalCategories} />
-            <StatCard icon={<MessageCircle />} label="Comentários" value={stats.totalComments} />
-            <StatCard icon={<Star />} label="Em Destaque" value={stats.featuredCount} />
+            <StatCard label="Artigos" value={stats.totalPosts} />
+            <StatCard label="Coleções" value={stats.totalCategories} />
+            <StatCard label="Anotações" value={stats.totalComments} />
+            <StatCard label="Em Destaque" value={stats.featuredCount} />
           </>
         ) : null}
       </div>
 
-      <div className="grid gap-12 lg:grid-cols-3">
-        {/* Posts List */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="font-serif text-2xl font-bold">Artigos Publicados</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-16">
+        {/* Posts Archive */}
+        <div>
+          <div className="border-b border-border pb-4 mb-8 flex justify-between items-end">
+            <h2 className="font-serif italic text-2xl text-foreground">Registro de Manuscritos</h2>
+          </div>
           
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="border-t border-border">
             {isLoadingPosts ? (
-              <div className="p-6 space-y-4">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+              <div className="space-y-4 py-4">
+                {[1, 2, 3].map(i => <div key={i} className="h-24 bg-muted/10 animate-pulse border-b border-border/50" />)}
               </div>
             ) : posts && posts.length > 0 ? (
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-border/50">
                 {posts.map(post => (
-                  <div key={post.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={post.id} className="py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:bg-muted/5 transition-colors -mx-4 px-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-primary/80 uppercase tracking-wider">
-                          {post.category?.name || "Sem categoria"}
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-primary/70">
+                          {post.category?.name || "Sem coleção"}
                         </span>
                         {post.featured && (
-                          <span className="bg-secondary/20 text-secondary-foreground text-[10px] px-2 py-0.5 rounded-full font-semibold">
-                            Destaque
+                          <span className="font-mono text-[9px] uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 border border-primary/20">
+                            Em Destaque
                           </span>
                         )}
                       </div>
-                      <h3 className="font-serif text-lg font-bold text-foreground">
-                        <Link href={`/artigos/${post.id}`} className="hover:text-primary transition-colors">
-                          {post.title}
-                        </Link>
+                      <h3 className="font-serif text-xl text-foreground mb-2">
+                        {post.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Publicado em {format(new Date(post.publishedAt), "dd/MM/yyyy", { locale: ptBR })}
+                      <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+                        Data de Registro: {format(new Date(post.publishedAt), "dd.MM.yyyy", { locale: ptBR })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Link href={`/admin/editar-artigo/${post.id}`}>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Edit className="h-4 w-4" /> Editar
-                        </Button>
+                    
+                    <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest">
+                      <Link href={`/admin/editar-artigo/${post.id}`} className="text-foreground hover:text-primary transition-colors pb-1 border-b border-transparent hover:border-primary">
+                        Editar
                       </Link>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
+                      <button 
                         onClick={() => handleDeletePost(post.id)}
                         disabled={deletePost.isPending}
-                        className="text-destructive hover:bg-destructive hover:text-destructive-foreground border-destructive/20"
+                        className="text-muted-foreground hover:text-destructive transition-colors pb-1 border-b border-transparent hover:border-destructive"
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        Remover
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center text-muted-foreground italic">
-                Nenhum artigo encontrado.
+              <div className="py-16 text-center">
+                <p className="font-serif italic text-muted-foreground">O arquivo está vazio no momento.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Categories Manager */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-2xl font-bold">Categorias</h2>
+        <div>
+          <div className="border-b border-border pb-4 mb-8 flex justify-between items-end">
+            <h2 className="font-serif italic text-2xl text-foreground">Coleções</h2>
             <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" /> Nova
-                </Button>
+                <button className="font-mono text-[10px] uppercase tracking-widest text-primary pb-1 border-b border-transparent hover:border-primary transition-colors">
+                  Nova Coleção
+                </button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Nova Categoria</DialogTitle>
+              <DialogContent className="rounded-none border-border bg-background p-8 max-w-md">
+                <DialogHeader className="mb-6">
+                  <DialogTitle className="font-serif text-2xl font-normal">Criar Nova Coleção</DialogTitle>
                 </DialogHeader>
                 <Form {...categoryForm}>
-                  <form onSubmit={categoryForm.handleSubmit(onSubmitCategory)} className="space-y-4 pt-4">
+                  <form onSubmit={categoryForm.handleSubmit(onSubmitCategory)} className="space-y-6">
                     <FormField
                       control={categoryForm.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome</FormLabel>
-                          <FormControl><Input placeholder="Ex: Devocionais" {...field} /></FormControl>
-                          <FormMessage />
+                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome da Coleção</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ex: Devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-lg" {...field} />
+                          </FormControl>
+                          <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
                       )}
                     />
@@ -213,9 +212,11 @@ export default function Admin() {
                       name="slug"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Slug (URL)</FormLabel>
-                          <FormControl><Input placeholder="ex-devocionais" {...field} /></FormControl>
-                          <FormMessage />
+                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Identificador (URL)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="ex-devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm" {...field} />
+                          </FormControl>
+                          <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
                       )}
                     />
@@ -224,14 +225,16 @@ export default function Admin() {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Descrição (Opcional)</FormLabel>
-                          <FormControl><Textarea {...field} /></FormControl>
-                          <FormMessage />
+                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Breve Descrição</FormLabel>
+                          <FormControl>
+                            <Textarea className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-sans font-light resize-y" {...field} />
+                          </FormControl>
+                          <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={createCategory.isPending}>
-                      {createCategory.isPending ? "Criando..." : "Criar Categoria"}
+                    <Button type="submit" className="w-full bg-transparent text-foreground border border-border hover:bg-muted/50 hover:text-primary transition-colors font-mono text-xs uppercase tracking-widest rounded-none h-12 mt-4" disabled={createCategory.isPending}>
+                      {createCategory.isPending ? "Registrando..." : "Registrar Coleção"}
                     </Button>
                   </form>
                 </Form>
@@ -239,25 +242,25 @@ export default function Admin() {
             </Dialog>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-2">
+          <div className="border border-border p-6 bg-background">
             {isLoadingCategories ? (
-              <div className="space-y-2 p-2">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-10 w-full" />)}
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => <div key={i} className="h-10 bg-muted/10 animate-pulse border-b border-border/50" />)}
               </div>
             ) : categories && categories.length > 0 ? (
               <ul className="divide-y divide-border/50">
                 {categories.map(category => (
-                  <li key={category.id} className="flex justify-between items-center p-3">
-                    <span className="font-medium text-sm">{category.name}</span>
-                    <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-md">
-                      {category.postCount} posts
+                  <li key={category.id} className="flex justify-between items-baseline py-4 first:pt-0 last:pb-0">
+                    <span className="font-serif text-lg text-foreground">{category.name}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {category.postCount} {category.postCount === 1 ? 'item' : 'itens'}
                     </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-center text-sm text-muted-foreground italic p-4">
-                Nenhuma categoria criada.
+              <p className="text-center font-serif italic text-muted-foreground py-6">
+                O arquivo de coleções está vazio.
               </p>
             )}
           </div>
@@ -267,14 +270,11 @@ export default function Admin() {
   );
 }
 
-function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: number }) {
+function StatCard({ label, value }: { label: string, value: number }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center">
-      <div className="text-primary mb-3 h-8 w-8 flex items-center justify-center">
-        {icon}
-      </div>
-      <p className="text-3xl font-serif font-bold text-foreground mb-1">{value}</p>
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+    <div className="bg-background p-6 md:p-8 flex flex-col items-center justify-center text-center">
+      <p className="text-4xl md:text-5xl font-serif text-foreground mb-3 font-normal">{value}</p>
+      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
     </div>
   );
 }

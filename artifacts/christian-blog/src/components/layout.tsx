@@ -3,30 +3,52 @@ import { Link } from "wouter";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-[100dvh] flex flex-col font-sans text-foreground bg-background selection:bg-primary selection:text-primary-foreground">
-      <header className="border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-primary hover:text-primary/90 transition-colors">
-            Blog Cristão
-          </Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">Início</Link>
-            <Link href="/artigos" className="text-sm font-medium hover:text-primary transition-colors">Artigos</Link>
-            <Link href="/categorias" className="text-sm font-medium hover:text-primary transition-colors">Categorias</Link>
-            <Link href="/sobre" className="text-sm font-medium hover:text-primary transition-colors">Sobre</Link>
-            <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Admin</Link>
-          </nav>
+    <div className="min-h-[100dvh] flex flex-col font-sans text-foreground bg-background selection:bg-primary/20 selection:text-primary relative">
+      {/* Noise Overlay */}
+      <div className="bg-noise mix-blend-multiply dark:mix-blend-screen" />
+      
+      <header className="border-b border-border relative z-40 bg-background/90 backdrop-blur-md">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between py-6 md:py-8 gap-6 border-b border-border/50">
+            <div className="text-center md:text-left">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">Publicação Literária Diária</span>
+              <Link href="/" className="font-serif text-3xl md:text-4xl font-normal tracking-tight text-foreground hover:text-primary transition-colors block">
+                Blog Cristão.
+              </Link>
+            </div>
+            
+            <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Início</Link>
+              <Link href="/artigos" className="hover:text-primary transition-colors">Artigos</Link>
+              <Link href="/categorias" className="hover:text-primary transition-colors">Categorias</Link>
+              <Link href="/sobre" className="hover:text-primary transition-colors">Sobre</Link>
+              <Link href="/admin" className="hover:text-primary transition-colors">Admin</Link>
+            </nav>
+          </div>
         </div>
       </header>
-      <main className="flex-1">
+
+      <main className="flex-1 relative z-10 w-full animate-in fade-in duration-1000">
         {children}
       </main>
-      <footer className="border-t border-border mt-24 py-12 bg-card">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p className="font-serif text-xl italic mb-4 text-foreground/80">"Lâmpada para os meus pés é tua palavra, e luz para o meu caminho."</p>
-          <p className="text-sm">Salmos 119:105</p>
-          <div className="mt-12 text-sm opacity-60">
-            &copy; {new Date().getFullYear()} Blog Cristão. Todos os direitos reservados.
+
+      <footer className="border-t border-border mt-32 py-16 bg-background relative z-10">
+        <div className="container mx-auto px-6 max-w-4xl text-center flex flex-col items-center">
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center mb-8">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+          </div>
+          <p className="font-serif text-2xl md:text-3xl italic mb-6 text-foreground/80 leading-relaxed font-light">
+            "Lâmpada para os meus pés é tua palavra,<br/>e luz para o meu caminho."
+          </p>
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-16">
+            Salmos 119:105
+          </p>
+          
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border to-transparent mb-12" />
+          
+          <div className="flex flex-col md:flex-row justify-between w-full font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60">
+            <span>&copy; {new Date().getFullYear()} Blog Cristão</span>
+            <span className="mt-4 md:mt-0">Todos os direitos reservados</span>
           </div>
         </div>
       </footer>
