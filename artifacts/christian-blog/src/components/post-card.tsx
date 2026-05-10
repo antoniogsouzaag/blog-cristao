@@ -11,7 +11,7 @@ export function PostCard({ post, featured = false, compact = false }: { post: Po
           {post.category && (
             <>
               <span className="text-primary/70">{post.category.name}</span>
-              <span>•</span>
+              <span className="opacity-40">•</span>
             </>
           )}
           <time dateTime={post.publishedAt}>
@@ -29,49 +29,58 @@ export function PostCard({ post, featured = false, compact = false }: { post: Po
   }
 
   return (
-    <article className={`group relative flex flex-col ${featured ? 'md:flex-row md:gap-12 md:items-center' : 'gap-6'} transition-all`}>
-      {post.imageUrl && (
-        <div className={`overflow-hidden border border-border ${featured ? 'md:w-1/2 aspect-[4/3]' : 'aspect-[4/3] w-full'}`}>
-          <img 
-            src={post.imageUrl} 
+    <article className="group relative flex flex-col gap-0 transition-all" data-testid={`card-post-${post.id}`}>
+      {/* Image */}
+      <div className="aspect-[4/3] w-full overflow-hidden border border-border/60 mb-5 bg-muted/20">
+        {post.imageUrl ? (
+          <img
+            src={post.imageUrl}
             alt={post.title}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter saturate-[0.85] contrast-[0.9]"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            style={{ filter: "saturate(0.82) contrast(0.92)" }}
           />
-        </div>
-      )}
-      <div className={`flex flex-col justify-center ${featured ? 'md:w-1/2' : 'flex-1'} ${!post.imageUrl && 'border-t border-border pt-6'}`}>
-        <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-3">
-          {post.category && (
-            <span className="text-primary border-b border-primary/20 pb-0.5">{post.category.name}</span>
-          )}
-          <span className="opacity-50">/</span>
-          <time dateTime={post.publishedAt}>
-            {format(new Date(post.publishedAt), "dd MMMM yyyy", { locale: ptBR })}
-          </time>
-          {post.authorName && (
-            <>
-              <span className="opacity-50">/</span>
-              <span>{post.authorName}</span>
-            </>
-          )}
-        </div>
-        
-        <h3 className={`font-serif leading-tight text-foreground transition-colors group-hover:text-primary ${featured ? 'text-3xl md:text-5xl mb-6 font-normal' : 'text-2xl mb-4 font-normal'}`}>
-          <Link href={`/artigos/${post.id}`}>
-            <span className="absolute inset-0" />
-            {post.title}
-          </Link>
-        </h3>
-        
-        <p className={`font-sans font-light text-foreground/70 ${featured ? 'text-lg line-clamp-4 leading-relaxed' : 'text-sm line-clamp-3 leading-relaxed'} mb-6`}>
-          {post.excerpt}
-        </p>
-        
-        <div className="mt-auto">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-primary/20 pb-1 group-hover:border-primary transition-colors">
-            Ler artigo completo
-          </span>
-        </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-muted/30">
+            <span className="font-serif text-4xl text-muted-foreground/30 italic">†</span>
+          </div>
+        )}
+      </div>
+
+      {/* Meta */}
+      <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-3 flex-wrap">
+        {post.category && (
+          <span className="text-primary/80 border-b border-primary/20 pb-0.5">{post.category.name}</span>
+        )}
+        <span className="opacity-40">/</span>
+        <time dateTime={post.publishedAt}>
+          {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
+        </time>
+        {post.authorName && (
+          <>
+            <span className="opacity-40">/</span>
+            <span className="opacity-70">{post.authorName}</span>
+          </>
+        )}
+      </div>
+
+      {/* Title */}
+      <h3 className={`font-serif leading-tight text-foreground transition-colors group-hover:text-primary mb-3 font-normal ${featured ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
+        <Link href={`/artigos/${post.id}`}>
+          <span className="absolute inset-0" />
+          {post.title}
+        </Link>
+      </h3>
+
+      {/* Excerpt */}
+      <p className="font-sans font-light text-foreground/65 text-sm line-clamp-3 leading-relaxed mb-4">
+        {post.excerpt}
+      </p>
+
+      {/* Read link */}
+      <div className="mt-auto">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-primary/25 pb-1 group-hover:border-primary transition-colors">
+          Ler artigo completo
+        </span>
       </div>
     </article>
   );

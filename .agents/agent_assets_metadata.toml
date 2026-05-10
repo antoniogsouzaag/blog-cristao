@@ -18,3 +18,39 @@ id = "b8jgFA0FJHt60xPlv-xgl"
 uri = "file://artifacts/christian-blog/public/images/praying-hands.png"
 type = "image"
 title = "Hands praying over scripture"
+
+[[generated]]
+id = "FxkzZCpeUgkUl-SEdvhPp"
+uri = "file://artifacts/christian-blog/public/images/hero-banner.png"
+type = "image"
+title = "hero banner bible candlelight"
+
+[[generated]]
+id = "IdvlAYj9DkHAqUCLHQ67r"
+uri = "file://artifacts/christian-blog/public/images/post-paz.png"
+type = "image"
+title = "prayer hands bible warm light"
+
+[[generated]]
+id = "2S2dNwcFCSpgAm0fzR1Kk"
+uri = "file://artifacts/christian-blog/public/images/post-sermao.png"
+type = "image"
+title = "mountain steps golden hour"
+
+[[generated]]
+id = "L1YhV-HbwLyruVqKxtJSP"
+uri = "file://artifacts/christian-blog/public/images/post-testemunho.png"
+type = "image"
+title = "candle flame bible rosary dark"
+
+[[generated]]
+id = "l3TFgo4Ljazk59TDzkj7s"
+uri = "file://artifacts/christian-blog/public/images/post-familia.png"
+type = "image"
+title = "family prayer table warm light"
+
+[[generated]]
+id = "TTZVXALbicx3wOqwfY7qG"
+uri = "file://artifacts/christian-blog/public/images/post-oracao.png"
+type = "image"
+title = "prayer chapel stained glass light"
