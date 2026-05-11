@@ -101,6 +101,62 @@ export interface CommentInput {
   content: string;
 }
 
+export interface Ebook {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  excerpt: string;
+  authorName: string;
+  /** @nullable */
+  coverUrl?: string | null;
+  price: string;
+  /** @nullable */
+  originalPrice?: string | null;
+  /** @nullable */
+  fileUrl?: string | null;
+  category: string;
+  featured: boolean;
+  onSale: boolean;
+  /** @nullable */
+  pageCount?: number | null;
+  publishedAt: string;
+}
+
+export interface EbookInput {
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  slug: string;
+  description: string;
+  excerpt: string;
+  authorName: string;
+  coverUrl?: string;
+  price: string;
+  originalPrice?: string;
+  fileUrl?: string;
+  category: string;
+  featured?: boolean;
+  onSale?: boolean;
+  pageCount?: number;
+}
+
+export interface EbookUpdate {
+  title?: string;
+  slug?: string;
+  description?: string;
+  excerpt?: string;
+  authorName?: string;
+  coverUrl?: string;
+  price?: string;
+  originalPrice?: string;
+  fileUrl?: string;
+  category?: string;
+  featured?: boolean;
+  onSale?: boolean;
+  pageCount?: number;
+}
+
 export type ListPostsParams = {
   /**
    * @nullable
@@ -114,4 +170,19 @@ export type ListPostsParams = {
    * @nullable
    */
   search?: string | null;
+};
+
+export type ListEbooksParams = {
+  /**
+   * @nullable
+   */
+  featured?: boolean | null;
+  /**
+   * @nullable
+   */
+  onSale?: boolean | null;
+  /**
+   * @nullable
+   */
+  category?: string | null;
 };

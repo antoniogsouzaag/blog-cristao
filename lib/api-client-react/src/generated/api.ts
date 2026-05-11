@@ -22,7 +22,11 @@ import type {
   CategoryInput,
   Comment,
   CommentInput,
+  Ebook,
+  EbookInput,
+  EbookUpdate,
   HealthStatus,
+  ListEbooksParams,
   ListPostsParams,
   Post,
   PostInput,
@@ -926,6 +930,442 @@ export const useCreateCategory = <
   TContext
 > => {
   return useMutation(getCreateCategoryMutationOptions(options));
+};
+
+/**
+ * @summary List all ebooks
+ */
+export const getListEbooksUrl = (params?: ListEbooksParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/ebooks?${stringifiedParams}`
+    : `/api/ebooks`;
+};
+
+export const listEbooks = async (
+  params?: ListEbooksParams,
+  options?: RequestInit,
+): Promise<Ebook[]> => {
+  return customFetch<Ebook[]>(getListEbooksUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListEbooksQueryKey = (params?: ListEbooksParams) => {
+  return [`/api/ebooks`, ...(params ? [params] : [])] as const;
+};
+
+export const getListEbooksQueryOptions = <
+  TData = Awaited<ReturnType<typeof listEbooks>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListEbooksParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listEbooks>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListEbooksQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listEbooks>>> = ({
+    signal,
+  }) => listEbooks(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listEbooks>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListEbooksQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listEbooks>>
+>;
+export type ListEbooksQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all ebooks
+ */
+
+export function useListEbooks<
+  TData = Awaited<ReturnType<typeof listEbooks>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListEbooksParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listEbooks>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListEbooksQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a new ebook
+ */
+export const getCreateEbookUrl = () => {
+  return `/api/ebooks`;
+};
+
+export const createEbook = async (
+  ebookInput: EbookInput,
+  options?: RequestInit,
+): Promise<Ebook> => {
+  return customFetch<Ebook>(getCreateEbookUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ebookInput),
+  });
+};
+
+export const getCreateEbookMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createEbook>>,
+    TError,
+    { data: BodyType<EbookInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createEbook>>,
+  TError,
+  { data: BodyType<EbookInput> },
+  TContext
+> => {
+  const mutationKey = ["createEbook"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createEbook>>,
+    { data: BodyType<EbookInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createEbook(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateEbookMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createEbook>>
+>;
+export type CreateEbookMutationBody = BodyType<EbookInput>;
+export type CreateEbookMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a new ebook
+ */
+export const useCreateEbook = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createEbook>>,
+    TError,
+    { data: BodyType<EbookInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createEbook>>,
+  TError,
+  { data: BodyType<EbookInput> },
+  TContext
+> => {
+  return useMutation(getCreateEbookMutationOptions(options));
+};
+
+/**
+ * @summary Get ebook by ID
+ */
+export const getGetEbookUrl = (ebookId: number) => {
+  return `/api/ebooks/${ebookId}`;
+};
+
+export const getEbook = async (
+  ebookId: number,
+  options?: RequestInit,
+): Promise<Ebook> => {
+  return customFetch<Ebook>(getGetEbookUrl(ebookId), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetEbookQueryKey = (ebookId: number) => {
+  return [`/api/ebooks/${ebookId}`] as const;
+};
+
+export const getGetEbookQueryOptions = <
+  TData = Awaited<ReturnType<typeof getEbook>>,
+  TError = ErrorType<void>,
+>(
+  ebookId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getEbook>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetEbookQueryKey(ebookId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getEbook>>> = ({
+    signal,
+  }) => getEbook(ebookId, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!ebookId,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getEbook>>, TError, TData> & {
+    queryKey: QueryKey;
+  };
+};
+
+export type GetEbookQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getEbook>>
+>;
+export type GetEbookQueryError = ErrorType<void>;
+
+/**
+ * @summary Get ebook by ID
+ */
+
+export function useGetEbook<
+  TData = Awaited<ReturnType<typeof getEbook>>,
+  TError = ErrorType<void>,
+>(
+  ebookId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getEbook>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetEbookQueryOptions(ebookId, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update an ebook
+ */
+export const getUpdateEbookUrl = (ebookId: number) => {
+  return `/api/ebooks/${ebookId}`;
+};
+
+export const updateEbook = async (
+  ebookId: number,
+  ebookUpdate: EbookUpdate,
+  options?: RequestInit,
+): Promise<Ebook> => {
+  return customFetch<Ebook>(getUpdateEbookUrl(ebookId), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ebookUpdate),
+  });
+};
+
+export const getUpdateEbookMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateEbook>>,
+    TError,
+    { ebookId: number; data: BodyType<EbookUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateEbook>>,
+  TError,
+  { ebookId: number; data: BodyType<EbookUpdate> },
+  TContext
+> => {
+  const mutationKey = ["updateEbook"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateEbook>>,
+    { ebookId: number; data: BodyType<EbookUpdate> }
+  > = (props) => {
+    const { ebookId, data } = props ?? {};
+
+    return updateEbook(ebookId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateEbookMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateEbook>>
+>;
+export type UpdateEbookMutationBody = BodyType<EbookUpdate>;
+export type UpdateEbookMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update an ebook
+ */
+export const useUpdateEbook = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateEbook>>,
+    TError,
+    { ebookId: number; data: BodyType<EbookUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateEbook>>,
+  TError,
+  { ebookId: number; data: BodyType<EbookUpdate> },
+  TContext
+> => {
+  return useMutation(getUpdateEbookMutationOptions(options));
+};
+
+/**
+ * @summary Delete an ebook
+ */
+export const getDeleteEbookUrl = (ebookId: number) => {
+  return `/api/ebooks/${ebookId}`;
+};
+
+export const deleteEbook = async (
+  ebookId: number,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteEbookUrl(ebookId), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteEbookMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteEbook>>,
+    TError,
+    { ebookId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteEbook>>,
+  TError,
+  { ebookId: number },
+  TContext
+> => {
+  const mutationKey = ["deleteEbook"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteEbook>>,
+    { ebookId: number }
+  > = (props) => {
+    const { ebookId } = props ?? {};
+
+    return deleteEbook(ebookId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteEbookMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteEbook>>
+>;
+
+export type DeleteEbookMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Delete an ebook
+ */
+export const useDeleteEbook = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteEbook>>,
+    TError,
+    { ebookId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteEbook>>,
+  TError,
+  { ebookId: number },
+  TContext
+> => {
+  return useMutation(getDeleteEbookMutationOptions(options));
 };
 
 /**

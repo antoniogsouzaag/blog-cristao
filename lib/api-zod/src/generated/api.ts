@@ -244,6 +244,127 @@ export const CreateCategoryBody = zod.object({
 });
 
 /**
+ * @summary List all ebooks
+ */
+export const ListEbooksQueryParams = zod.object({
+  featured: zod.coerce.boolean().nullish(),
+  onSale: zod.coerce.boolean().nullish(),
+  category: zod.coerce.string().nullish(),
+});
+
+export const ListEbooksResponseItem = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  description: zod.string(),
+  excerpt: zod.string(),
+  authorName: zod.string(),
+  coverUrl: zod.string().nullish(),
+  price: zod.string(),
+  originalPrice: zod.string().nullish(),
+  fileUrl: zod.string().nullish(),
+  category: zod.string(),
+  featured: zod.boolean(),
+  onSale: zod.boolean(),
+  pageCount: zod.number().nullish(),
+  publishedAt: zod.string(),
+});
+export const ListEbooksResponse = zod.array(ListEbooksResponseItem);
+
+/**
+ * @summary Create a new ebook
+ */
+
+export const CreateEbookBody = zod.object({
+  title: zod.string().min(1),
+  slug: zod.string().min(1),
+  description: zod.string(),
+  excerpt: zod.string(),
+  authorName: zod.string(),
+  coverUrl: zod.string().optional(),
+  price: zod.string(),
+  originalPrice: zod.string().optional(),
+  fileUrl: zod.string().optional(),
+  category: zod.string(),
+  featured: zod.boolean().optional(),
+  onSale: zod.boolean().optional(),
+  pageCount: zod.number().optional(),
+});
+
+/**
+ * @summary Get ebook by ID
+ */
+export const GetEbookParams = zod.object({
+  ebookId: zod.coerce.number(),
+});
+
+export const GetEbookResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  description: zod.string(),
+  excerpt: zod.string(),
+  authorName: zod.string(),
+  coverUrl: zod.string().nullish(),
+  price: zod.string(),
+  originalPrice: zod.string().nullish(),
+  fileUrl: zod.string().nullish(),
+  category: zod.string(),
+  featured: zod.boolean(),
+  onSale: zod.boolean(),
+  pageCount: zod.number().nullish(),
+  publishedAt: zod.string(),
+});
+
+/**
+ * @summary Update an ebook
+ */
+export const UpdateEbookParams = zod.object({
+  ebookId: zod.coerce.number(),
+});
+
+export const UpdateEbookBody = zod.object({
+  title: zod.string().optional(),
+  slug: zod.string().optional(),
+  description: zod.string().optional(),
+  excerpt: zod.string().optional(),
+  authorName: zod.string().optional(),
+  coverUrl: zod.string().optional(),
+  price: zod.string().optional(),
+  originalPrice: zod.string().optional(),
+  fileUrl: zod.string().optional(),
+  category: zod.string().optional(),
+  featured: zod.boolean().optional(),
+  onSale: zod.boolean().optional(),
+  pageCount: zod.number().optional(),
+});
+
+export const UpdateEbookResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  description: zod.string(),
+  excerpt: zod.string(),
+  authorName: zod.string(),
+  coverUrl: zod.string().nullish(),
+  price: zod.string(),
+  originalPrice: zod.string().nullish(),
+  fileUrl: zod.string().nullish(),
+  category: zod.string(),
+  featured: zod.boolean(),
+  onSale: zod.boolean(),
+  pageCount: zod.number().nullish(),
+  publishedAt: zod.string(),
+});
+
+/**
+ * @summary Delete an ebook
+ */
+export const DeleteEbookParams = zod.object({
+  ebookId: zod.coerce.number(),
+});
+
+/**
  * @summary List comments for a post
  */
 export const ListCommentsParams = zod.object({

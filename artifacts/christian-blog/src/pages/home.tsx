@@ -1,11 +1,13 @@
-import { useListFeaturedPosts, useListRecentPosts } from "@workspace/api-client-react";
+import { useListFeaturedPosts, useListRecentPosts, useListEbooks } from "@workspace/api-client-react";
 import { PostCard } from "@/components/post-card";
+import { EbookCard } from "@/components/ebook-card";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const { data: featuredPosts, isLoading: isLoadingFeatured } = useListFeaturedPosts();
   const { data: recentPosts, isLoading: isLoadingRecent } = useListRecentPosts();
+  const { data: featuredEbooks, isLoading: isLoadingEbooks } = useListEbooks({ featured: true });
 
   const primaryFeatured = featuredPosts?.[0];
   const secondaryFeatured = featuredPosts?.slice(1, 4) || [];
@@ -98,6 +100,48 @@ export default function Home() {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Ebook Promo Section */}
+      {(isLoadingEbooks || (featuredEbooks && featuredEbooks.length > 0)) && (
+        <section className="border-t border-b border-border/60 bg-[#f5f0e8] dark:bg-card/60">
+          <div className="container mx-auto px-6 md:px-12 py-16 md:py-20">
+            <div className="border-b border-border/60 pb-4 mb-12 flex justify-between items-end">
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">
+                  Recursos Cristãos
+                </span>
+                <h2 className="font-mono text-xs uppercase tracking-widest text-foreground">
+                  Loja de Ebooks
+                </h2>
+              </div>
+              <Link
+                href="/loja"
+                className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors"
+              >
+                Ver Todos os Títulos
+              </Link>
+            </div>
+
+            {isLoadingEbooks ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-12">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-4">
+                    <div className="aspect-[2/3] max-w-[220px] bg-border/20 animate-pulse" />
+                    <div className="h-3 w-1/3 bg-border/20 animate-pulse" />
+                    <div className="h-5 w-3/4 bg-border/20 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
+                {featuredEbooks?.slice(0, 3).map((ebook) => (
+                  <EbookCard key={ebook.id} ebook={ebook} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

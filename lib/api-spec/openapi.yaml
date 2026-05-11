@@ -16,6 +16,8 @@ tags:
     description: Category operations
   - name: comments
     description: Comment operations
+  - name: ebooks
+    description: Ebook store operations
 paths:
   /healthz:
     get:
@@ -207,6 +209,108 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Category"
+
+  /ebooks:
+    get:
+      operationId: listEbooks
+      tags: [ebooks]
+      summary: List all ebooks
+      parameters:
+        - name: featured
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: onSale
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: category
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of ebooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ebook"
+    post:
+      operationId: createEbook
+      tags: [ebooks]
+      summary: Create a new ebook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EbookInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ebook"
+
+  /ebooks/{ebookId}:
+    get:
+      operationId: getEbook
+      tags: [ebooks]
+      summary: Get ebook by ID
+      parameters:
+        - name: ebookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Ebook found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ebook"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateEbook
+      tags: [ebooks]
+      summary: Update an ebook
+      parameters:
+        - name: ebookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EbookUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ebook"
+    delete:
+      operationId: deleteEbook
+      tags: [ebooks]
+      summary: Delete an ebook
+      parameters:
+        - name: ebookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
 
   /posts/{postId}/comments:
     get:
@@ -418,3 +522,101 @@ components:
         content:
           type: string
           minLength: 1
+
+    Ebook:
+      type: object
+      required: [id, title, slug, description, excerpt, authorName, price, category, featured, onSale, publishedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        excerpt:
+          type: string
+        authorName:
+          type: string
+        coverUrl:
+          type: ["string", "null"]
+        price:
+          type: string
+        originalPrice:
+          type: ["string", "null"]
+        fileUrl:
+          type: ["string", "null"]
+        category:
+          type: string
+        featured:
+          type: boolean
+        onSale:
+          type: boolean
+        pageCount:
+          type: ["integer", "null"]
+        publishedAt:
+          type: string
+
+    EbookInput:
+      type: object
+      required: [title, slug, description, excerpt, authorName, price, category]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        slug:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        excerpt:
+          type: string
+        authorName:
+          type: string
+        coverUrl:
+          type: string
+        price:
+          type: string
+        originalPrice:
+          type: string
+        fileUrl:
+          type: string
+        category:
+          type: string
+        featured:
+          type: boolean
+        onSale:
+          type: boolean
+        pageCount:
+          type: integer
+
+    EbookUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        excerpt:
+          type: string
+        authorName:
+          type: string
+        coverUrl:
+          type: string
+        price:
+          type: string
+        originalPrice:
+          type: string
+        fileUrl:
+          type: string
+        category:
+          type: string
+        featured:
+          type: boolean
+        onSale:
+          type: boolean
+        pageCount:
+          type: integer

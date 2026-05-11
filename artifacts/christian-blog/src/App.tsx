@@ -11,6 +11,8 @@ import Categories from "@/pages/categories";
 import About from "@/pages/about";
 import Admin from "@/pages/admin";
 import AdminPostEditor from "@/pages/admin/post-editor";
+import Store from "@/pages/store";
+import EbookDetail from "@/pages/ebook-detail";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ function Router() {
         <Route path="/artigos/:id" component={Article} />
         <Route path="/categorias" component={Categories} />
         <Route path="/sobre" component={About} />
+        <Route path="/loja" component={Store} />
+        <Route path="/loja/:id" component={EbookDetail} />
         <Route path="/admin" component={Admin} />
         <Route path="/admin/novo-artigo" component={AdminPostEditor} />
         <Route path="/admin/editar-artigo/:id" component={AdminPostEditor} />
