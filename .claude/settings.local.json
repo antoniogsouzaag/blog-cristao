@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter @workspace/christian-blog dev)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm --filter @workspace/christian-blog typecheck)",
+      "Bash(pnpm --filter @workspace/christian-blog build)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -s http://localhost:5173/src/main.tsx)",
+      "Bash(curl -s \"http://localhost:5173/src/App.tsx\")",
+      "Bash(curl -s \"http://localhost:5173/src/pages/home.tsx\")",
+      "Bash(curl -s \"http://localhost:5173/@fs/D:/projetos%20github/blog-cristao/lib/api-client-react/src/index.ts\")",
+      "Bash(curl -sv \"http://localhost:5173/@fs/D:/projetos%20github/blog-cristao/lib/api-client-react/src/index.ts\")",
+      "Bash(curl -s \"http://localhost:5173/node_modules/.vite/deps/@workspace_api-client-react.js?v=a39cb8c7\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill *)",
+      "PowerShell(Stop-Process *)",
+      "Bash(curl -s \"http://localhost:5173/api/posts/featured\")",
+      "Bash(pnpm --filter @workspace/api-server build)",
+      "Bash(node --env-file=.env.local --enable-source-maps ./dist/index.mjs)",
+      "Bash(curl -sv \"http://localhost:5173/api/posts/featured\")",
+      "Bash(curl *)",
+      "Bash(node --env-file=\"artifacts/api-server/.env.local\" node_modules/.bin/drizzle-kit push --config=\"lib/db/drizzle.config.ts\")",
+      "Bash(node --env-file=\"artifacts/api-server/.env.local\" \"lib/db/node_modules/.bin/drizzle-kit\" push --config=\"lib/db/drizzle.config.ts\")",
+      "Bash(pnpm --filter @workspace/db --env-file=\"../../artifacts/api-server/.env.local\" push)",
+      "PowerShell(pnpm *)",
+      "PowerShell(pnpm push *)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(netstat *)",
+      "PowerShell(pnpm drizzle-kit *)"
+    ]
+  }
+}

@@ -25,7 +25,6 @@ import { Link } from "wouter";
 
 const postSchema = z.object({
   title: z.string().min(3, "Título obrigatório"),
-  slug: z.string().min(3, "Slug obrigatório"),
   content: z.string().min(10, "Conteúdo obrigatório"),
   excerpt: z.string().min(5, "Resumo obrigatório"),
   authorName: z.string().min(2, "Autor obrigatório"),
@@ -57,7 +56,6 @@ export default function AdminPostEditor() {
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: "",
-      slug: "",
       content: "",
       excerpt: "",
       authorName: "",
@@ -76,7 +74,6 @@ export default function AdminPostEditor() {
       initializedForId.current = post.id;
       form.reset({
         title: post.title,
-        slug: post.slug,
         content: post.content,
         excerpt: post.excerpt,
         authorName: post.authorName,
@@ -90,9 +87,17 @@ export default function AdminPostEditor() {
   }, [post, isEditing, form]);
 
   const onSubmit = (values: z.infer<typeof postSchema>) => {
+    const generatedSlug = values.title
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+
     if (isEditing && postId) {
       updatePost.mutate(
-        { id: postId, data: values },
+        { id: postId, data: { ...values, slug: post?.slug ?? generatedSlug } },
         {
           onSuccess: () => {
             toast({ title: "Manuscrito arquivado com as novas alterações." });
@@ -106,7 +111,7 @@ export default function AdminPostEditor() {
       );
     } else {
       createPost.mutate(
-        { data: values },
+        { data: { ...values, slug: generatedSlug } },
         {
           onSuccess: () => {
             toast({ title: "Manuscrito registrado no acervo com sucesso." });
@@ -154,34 +159,19 @@ export default function AdminPostEditor() {
             
             {/* Header info */}
             <div className="space-y-8 pb-10 border-b border-border/50">
-              <div className="grid gap-8 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Título do Escrito</FormLabel>
-                      <FormControl>
-                        <Input placeholder="O título da sua obra..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-2xl" {...field} />
-                      </FormControl>
-                      <FormMessage className="font-mono text-[10px]" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Identificador (URL)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="titulo-da-sua-obra" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm" {...field} />
-                      </FormControl>
-                      <FormMessage className="font-mono text-[10px]" />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Título do Escrito</FormLabel>
+                    <FormControl>
+                      <Input placeholder="O título da sua obra..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-2xl" {...field} />
+                    </FormControl>
+                    <FormMessage className="font-mono text-[10px]" />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid gap-8 md:grid-cols-2">
                 <FormField

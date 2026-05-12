@@ -16,8 +16,9 @@ if (!rawUrl) {
 const url = process.env.SUPABASE_DB_URL ? fixDbUrl(rawUrl) : rawUrl;
 
 export default defineConfig({
-  schema: path.join(__dirname, "./src/schema/index.ts"),
+  schema: "./src/schema/index.ts",
   dialect: "postgresql",
+  tablesFilter: ["posts", "categories", "comments", "ebooks", "ebook_purchases", "leads"],
   dbCredentials: {
     url,
     ssl: process.env.SUPABASE_DB_URL ? { rejectUnauthorized: false } : false,

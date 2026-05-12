@@ -10,6 +10,13 @@ out-tsc
 
 # dependencies
 node_modules
+.pnpm-store/
+
+# environment variables
+.env
+.env.local
+.env.*.local
+!.env.example
 
 # IDEs and editors
 /.idea
@@ -41,9 +48,14 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# pnpm
+pnpm-lock.yaml.bak
+
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
-# Replit
+# Replit (arquivos de configuração da plataforma, não necessários localmente)
+.replit
+.replitignore
 .cache/
 .local/
