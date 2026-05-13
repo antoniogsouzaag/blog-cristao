@@ -1,0 +1,39 @@
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+# Builder stage
+FROM base AS builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY tsconfig.base.json tsconfig.json ./
+COPY lib/ ./lib/
+COPY artifacts/api-server/ ./artifacts/api-server/
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @workspace/api-server build
+
+# Production stage
+FROM node:20-slim AS runner
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY tsconfig.base.json tsconfig.json ./
+COPY lib/ ./lib/
+COPY artifacts/api-server/ ./artifacts/api-server/
+
+RUN pnpm install --frozen-lockfile --prod
+
+COPY --from=builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+EXPOSE 3001
+
+CMD ["node", "--enable-source-maps", "./artifacts/api-server/dist/index.mjs"]
