@@ -8,10 +8,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY tsconfig.base.json tsconfig.json ./
 COPY lib/ ./lib/
 COPY artifacts/api-server/ ./artifacts/api-server/
-# Remove preinstall guard + aprova builds necessários no .npmrc
 RUN node -e "const p=require('./package.json'); delete p.scripts.preinstall; require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2))"
-RUN printf '\nonlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=@swc/core\nonlyBuiltDependencies[]=msw\nonlyBuiltDependencies[]=unrs-resolver\n' >> .npmrc
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm --filter @workspace/api-server build
 
 # ─── Build Frontend ──────────────────────────────────────────────────────────
@@ -22,8 +20,7 @@ COPY tsconfig.base.json tsconfig.json ./
 COPY lib/ ./lib/
 COPY artifacts/christian-blog/ ./artifacts/christian-blog/
 RUN node -e "const p=require('./package.json'); delete p.scripts.preinstall; require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2))"
-RUN printf '\nonlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=@swc/core\nonlyBuiltDependencies[]=msw\nonlyBuiltDependencies[]=unrs-resolver\n' >> .npmrc
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm --filter @workspace/christian-blog build
 
 # ─── Runtime ─────────────────────────────────────────────────────────────────
@@ -38,8 +35,7 @@ COPY tsconfig.base.json tsconfig.json ./
 COPY lib/ ./lib/
 COPY artifacts/api-server/ ./artifacts/api-server/
 RUN node -e "const p=require('./package.json'); delete p.scripts.preinstall; require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2))"
-RUN printf '\nonlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=@swc/core\nonlyBuiltDependencies[]=msw\nonlyBuiltDependencies[]=unrs-resolver\n' >> .npmrc
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 COPY --from=api-builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
 COPY --from=frontend-builder /app/artifacts/christian-blog/dist/public /usr/share/nginx/html
