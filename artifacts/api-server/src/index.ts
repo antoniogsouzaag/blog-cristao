@@ -16,15 +16,14 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-// Validate DB connection before accepting traffic
-try {
-  const client = await pool.connect();
+// Probe DB connection at startup — non-fatal: server starts regardless so nginx never 502s.
+// Errors here will surface on every API request anyway via the route handlers.
+pool.connect().then((client) => {
   client.release();
   logger.info("Database connection established");
-} catch (err) {
-  logger.error({ err }, "Failed to connect to database — check SUPABASE_DB_URL / DATABASE_URL");
-  process.exit(1);
-}
+}).catch((err) => {
+  logger.error({ err }, "Startup DB probe failed — check SUPABASE_DB_URL / DATABASE_URL and network reachability");
+});
 
 app.listen(port, (err) => {
   if (err) {
