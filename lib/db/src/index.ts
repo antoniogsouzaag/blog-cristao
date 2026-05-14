@@ -14,11 +14,19 @@ function fixDbUrl(url: string): string {
 }
 
 const rawUrl = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+
+// Do NOT throw here at module level — a throw before app.listen() kills the process
+// and nginx returns 502. Log a warning; DB queries will fail with a clear error at runtime.
 if (!rawUrl) {
-  throw new Error("SUPABASE_DB_URL or DATABASE_URL must be set.");
+  console.error(
+    "[db] CRITICAL: SUPABASE_DB_URL and DATABASE_URL are both unset. " +
+    "All database queries will fail. Set the variable in your runtime environment."
+  );
 }
 
-const connectionString = process.env.SUPABASE_DB_URL ? fixDbUrl(rawUrl) : rawUrl;
+const connectionString = rawUrl
+  ? (process.env.SUPABASE_DB_URL ? fixDbUrl(rawUrl) : rawUrl)
+  : "postgresql://localhost/unconfigured"; // sentinel — pool.connect() will throw a clear error
 
 export const pool = new Pool({
   connectionString,
