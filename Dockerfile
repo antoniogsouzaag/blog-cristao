@@ -26,7 +26,7 @@ RUN pnpm --filter @workspace/christian-blog build
 # ─── Runtime ─────────────────────────────────────────────────────────────────
 FROM node:22-slim AS runner
 RUN npm install -g pnpm@11.1.1
-RUN apt-get update && apt-get install -y nginx supervisor && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y nginx supervisor curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -45,9 +45,12 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN rm -f /etc/nginx/sites-enabled/default
 
 ENV NODE_ENV=production
-ENV PORT=3001
-# SUPABASE_DB_URL must be passed at runtime via --env or -e flag
-# docker run -e SUPABASE_DB_URL="..." blog-cristao
+# PORT is intentionally NOT set here — EasyPanel maps the exposed port (80) and may inject PORT=80.
+# The API internal port (3001) is pinned inside supervisord.conf to avoid the conflict.
+# At runtime, set SUPABASE_DB_URL in EasyPanel's environment variables panel.
 EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -sf http://localhost/api/healthz || exit 1
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
