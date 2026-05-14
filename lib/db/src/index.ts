@@ -5,8 +5,9 @@ import * as schema from "./schema";
 const { Pool } = pg;
 
 function fixDbUrl(url: string): string {
-  // Encode special characters in the password portion of the connection string
-  const match = url.match(/^(postgresql:\/\/[^:]+):(.+)@(.+)$/);
+  // Encode special characters in the password portion of the connection string.
+  // Handles both postgres:// and postgresql:// schemes (Supabase uses both).
+  const match = url.match(/^(postgres(?:ql)?:\/\/[^:]+):(.+)@(.+)$/);
   if (!match) return url;
   const [, prefix, password, rest] = match;
   return `${prefix}:${encodeURIComponent(password)}@${rest}`;
@@ -22,6 +23,9 @@ const connectionString = process.env.SUPABASE_DB_URL ? fixDbUrl(rawUrl) : rawUrl
 export const pool = new Pool({
   connectionString,
   ssl: process.env.SUPABASE_DB_URL ? { rejectUnauthorized: false } : false,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
 });
 export const db = drizzle(pool, { schema });
 

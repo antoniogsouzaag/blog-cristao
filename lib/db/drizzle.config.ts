@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 import path from "path";
 
 function fixDbUrl(url: string): string {
-  const match = url.match(/^(postgresql:\/\/[^:]+):(.+)@(.+)$/);
+  const match = url.match(/^(postgres(?:ql)?:\/\/[^:]+):(.+)@(.+)$/);
   if (!match) return url;
   const [, prefix, password, rest] = match;
   return `${prefix}:${encodeURIComponent(password)}@${rest}`;
