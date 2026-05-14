@@ -46,6 +46,8 @@ RUN rm -f /etc/nginx/sites-enabled/default
 
 ENV NODE_ENV=production
 ENV PORT=3001
+# SUPABASE_DB_URL must be passed at runtime via --env or -e flag
+# docker run -e SUPABASE_DB_URL="..." blog-cristao
 EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
