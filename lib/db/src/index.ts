@@ -40,7 +40,17 @@ function parsePostgresUrl(url: string): pg.PoolConfig | null {
   return { host, port, user, password, database };
 }
 
-const rawUrl = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+// Strip surrounding whitespace and quotes — EasyPanel users sometimes paste values
+// from .env files including the surrounding quotes (e.g. "postgresql://...").
+function cleanEnvVar(v: string | undefined): string | undefined {
+  if (!v) return undefined;
+  const trimmed = v.trim();
+  const unquoted = trimmed.replace(/^(["'])(.+)\1$/, "$2");
+  return unquoted || undefined;
+}
+
+const rawUrl = cleanEnvVar(process.env.SUPABASE_DB_URL) || cleanEnvVar(process.env.DATABASE_URL);
+const isSupabase = !!cleanEnvVar(process.env.SUPABASE_DB_URL);
 
 if (!rawUrl) {
   console.error(
@@ -61,14 +71,16 @@ function buildPoolConfig(): pg.PoolConfig {
     return { ...base, connectionString: "postgresql://localhost/unconfigured" };
   }
 
-  if (process.env.SUPABASE_DB_URL) {
+  if (isSupabase) {
     const parsed = parsePostgresUrl(rawUrl);
     if (parsed) {
       // Pass individual params so pg never URL-parses the raw password string.
       // This correctly handles any special chars (@ # ? ! etc.) without encoding.
       return { ...base, ...parsed, ssl: { rejectUnauthorized: false } };
     }
-    console.error("[db] WARNING: Failed to parse SUPABASE_DB_URL — falling back to connectionString.");
+    // Log the scheme prefix only — never log credentials
+    const preview = rawUrl.slice(0, 30).replace(/:.+/, ":***");
+    console.error(`[db] WARNING: Failed to parse SUPABASE_DB_URL (starts with: ${preview}) — check for extra quotes or whitespace in EasyPanel env var.`);
   }
 
   return { ...base, connectionString: rawUrl };
