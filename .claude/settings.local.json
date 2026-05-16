@@ -27,7 +27,10 @@
       "PowerShell(pnpm push *)",
       "PowerShell(Get-Process *)",
       "PowerShell(netstat *)",
-      "PowerShell(pnpm drizzle-kit *)"
+      "PowerShell(pnpm drizzle-kit *)",
+      "Read(//c/Users/antonio/AppData/Roaming/Code/**)",
+      "Read(//c/Users/antonio/.vscode/extensions/**)",
+      "Bash(xargs grep *)"
     ]
   }
 }
