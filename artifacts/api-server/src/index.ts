@@ -2,7 +2,7 @@ import app from "./app";
 import { pool } from "@workspace/db";
 import { logger } from "./lib/logger";
 
-const rawPort = process.env["PORT"] ?? "3001";
+const rawPort = process.env["PORT"] ?? "80";
 const port = Number(rawPort);
 
 if (Number.isNaN(port) || port <= 0) {
@@ -10,7 +10,7 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 if (!process.env["PORT"]) {
-  logger.warn("PORT not set by environment, defaulting to 3001");
+  logger.warn("PORT not set by environment, defaulting to 80");
 }
 
 // Log which DB env vars are present (never log values — they contain credentials)

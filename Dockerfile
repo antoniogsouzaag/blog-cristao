@@ -42,11 +42,11 @@ COPY --from=frontend-builder /app/artifacts/christian-blog/dist/public /app/publ
 
 ENV NODE_ENV=production
 ENV STATIC_DIR=/app/public
-# PORT is injected by EasyPanel — Node.js listens on it directly (no nginx proxy layer).
+# EasyPanel injects PORT=80 and routes external traffic to port 80 — Node.js listens on it directly.
 # Set SUPABASE_DB_URL in EasyPanel's environment variables panel.
-EXPOSE 3001
+EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -sf "http://localhost:${PORT:-3001}/api/healthz" || exit 1
+  CMD curl -sf "http://localhost:${PORT:-80}/api/healthz" || exit 1
 
 CMD ["node", "--enable-source-maps", "/app/artifacts/api-server/dist/index.mjs"]
