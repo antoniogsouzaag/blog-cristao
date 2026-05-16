@@ -1,3 +1,4 @@
+import path from "node:path";
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
@@ -30,6 +31,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+// Serve frontend static files when STATIC_DIR is configured (production only)
+const staticDir = process.env.STATIC_DIR;
+if (staticDir) {
+  app.use(express.static(staticDir));
+  // SPA fallback — serve index.html for all unmatched GET routes (client-side routing)
+  app.get(/.*/, (_req, res, next) => {
+    res.sendFile(path.join(staticDir, "index.html"), (err) => {
+      if (err) next(err);
+    });
+  });
+}
 
 // Global error handler — expõe mensagem de erro no response para diagnóstico
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {

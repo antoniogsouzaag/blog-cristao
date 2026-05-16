@@ -15,4 +15,9 @@ router.use(commentsRouter);
 router.use(ebooksRouter);
 router.use(leadsRouter);
 
+// 404 for unknown API routes — prevents SPA fallback from catching /api/* misses
+router.use((_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
 export default router;

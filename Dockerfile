@@ -23,10 +23,10 @@ RUN node -e "const p=require('./package.json'); delete p.scripts.preinstall; req
 RUN pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm --filter @workspace/christian-blog build
 
-# ─── Runtime ─────────────────────────────────────────────────────────────────
+# ─── Runtime — Node.js only, no nginx or supervisord ─────────────────────────
 FROM node:22-slim AS runner
 RUN npm install -g pnpm@11.1.1
-RUN apt-get update && apt-get install -y nginx supervisor curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -38,19 +38,15 @@ RUN node -e "const p=require('./package.json'); delete p.scripts.preinstall; req
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 COPY --from=api-builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
-COPY --from=frontend-builder /app/artifacts/christian-blog/dist/public /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-RUN rm -f /etc/nginx/sites-enabled/default
+COPY --from=frontend-builder /app/artifacts/christian-blog/dist/public /app/public
 
 ENV NODE_ENV=production
-# PORT is intentionally NOT set here — EasyPanel maps the exposed port (80) and may inject PORT=80.
-# The API internal port (3001) is pinned inside supervisord.conf to avoid the conflict.
-# At runtime, set SUPABASE_DB_URL in EasyPanel's environment variables panel.
-EXPOSE 80
+ENV STATIC_DIR=/app/public
+# PORT is injected by EasyPanel — Node.js listens on it directly (no nginx proxy layer).
+# Set SUPABASE_DB_URL in EasyPanel's environment variables panel.
+EXPOSE 3001
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -sf http://localhost/api/healthz || exit 1
+  CMD curl -sf "http://localhost:${PORT:-3001}/api/healthz" || exit 1
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["node", "--enable-source-maps", "/app/artifacts/api-server/dist/index.mjs"]

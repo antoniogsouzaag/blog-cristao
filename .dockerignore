@@ -1,0 +1,19 @@
+# Dependencies — installed fresh inside the build stages
+node_modules
+**/node_modules
+
+# Build artifacts — rebuilt inside Docker stages
+**/dist
+**/.turbo
+
+# Env files — never bake credentials into the image
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Editor / OS
+.git
+.gitignore
+.DS_Store
+*.log

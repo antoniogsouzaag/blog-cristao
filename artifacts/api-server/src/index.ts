@@ -2,18 +2,15 @@ import app from "./app";
 import { pool } from "@workspace/db";
 import { logger } from "./lib/logger";
 
-const rawPort = process.env["PORT"];
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
+const rawPort = process.env["PORT"] ?? "3001";
 const port = Number(rawPort);
 
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
+}
+
+if (!process.env["PORT"]) {
+  logger.warn("PORT not set by environment, defaulting to 3001");
 }
 
 // Log which DB env vars are present (never log values — they contain credentials)
@@ -23,7 +20,7 @@ logger.info({
   nodeEnv: process.env.NODE_ENV,
 }, "Startup: environment check");
 
-// Probe DB connection — non-fatal so nginx never gets a 502 due to a DB issue.
+// Probe DB connection — non-fatal; the server still starts even if DB is unreachable.
 // If this fails, API routes return 500/503 with error details (see /api/healthz/db).
 pool.connect().then((client) => {
   client.release();
