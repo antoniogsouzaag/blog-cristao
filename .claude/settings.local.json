@@ -30,7 +30,11 @@
       "PowerShell(pnpm drizzle-kit *)",
       "Read(//c/Users/antonio/AppData/Roaming/Code/**)",
       "Read(//c/Users/antonio/.vscode/extensions/**)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(SUPABASE_DB_URL=postgresql://postgres.pdkzkkwbawnrkadooemg:30B3ApbEekDi5TrI@aws-1-sa-east-1.pooler.supabase.com:6543/postgres pnpm push)",
+      "Bash(pnpm seed *)",
+      "Bash(pnpm dev *)",
+      "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(f\\\\\"- [{p['id']}] {p['title']}\\\\\"\\) for p in data.get\\('posts', data\\) if isinstance\\(p, dict\\)]\")"
     ]
   }
 }
