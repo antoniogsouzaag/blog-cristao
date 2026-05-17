@@ -275,7 +275,7 @@ export default function AdminPostEditor() {
                   <FormItem>
                     <div className="flex justify-between items-end mb-4">
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">O Manuscrito (Corpo Principal)</FormLabel>
-                      <span className="font-mono text-[10px] text-muted-foreground/60">Suporta formatação HTML</span>
+                      <span className="font-mono text-[10px] text-muted-foreground/60">Suporta Markdown</span>
                     </div>
                     <FormControl>
                       <Textarea 

@@ -14,6 +14,11 @@ RUN pnpm --filter @workspace/api-server build
 
 # ─── Build Frontend ──────────────────────────────────────────────────────────
 FROM base AS frontend-builder
+# Vite bakes VITE_* vars into the bundle at build time — pass via EasyPanel build args.
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY tsconfig.base.json tsconfig.json ./

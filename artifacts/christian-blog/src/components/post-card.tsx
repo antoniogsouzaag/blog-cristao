@@ -41,7 +41,7 @@ export function PostCard({ post, featured = false, compact = false }: { post: Po
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted/30">
-            <span className="font-serif text-4xl text-muted-foreground/30 italic">†</span>
+            <span className="font-serif text-4xl text-muted-foreground/30">†</span>
           </div>
         )}
       </div>

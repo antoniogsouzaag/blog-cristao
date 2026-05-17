@@ -3,7 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/layout";
-import { Component, type ReactNode, type ErrorInfo } from "react";
+import { Component, type ReactNode, type ErrorInfo, useEffect } from "react";
+import { useLocation } from "wouter";
+import { AuthProvider } from "@/contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null };
@@ -29,11 +32,30 @@ import Categories from "@/pages/categories";
 import About from "@/pages/about";
 import Admin from "@/pages/admin";
 import AdminPostEditor from "@/pages/admin/post-editor";
+import AdminEbookEditor from "@/pages/admin/ebook-editor";
+import AdminLogin from "@/pages/admin/login";
 import Store from "@/pages/store";
 import EbookDetail from "@/pages/ebook-detail";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!loading && !session) navigate("/admin/login");
+  }, [loading, session, navigate]);
+
+  if (loading) return (
+    <div className="py-32 text-center font-serif italic text-muted-foreground animate-pulse">
+      Verificando acesso...
+    </div>
+  );
+  if (!session) return null;
+  return <>{children}</>;
+}
 
 function Router() {
   return (
@@ -46,9 +68,22 @@ function Router() {
         <Route path="/sobre" component={About} />
         <Route path="/loja" component={Store} />
         <Route path="/loja/:id" component={EbookDetail} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/admin/novo-artigo" component={AdminPostEditor} />
-        <Route path="/admin/editar-artigo/:id" component={AdminPostEditor} />
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin">
+          {() => <ProtectedRoute><Admin /></ProtectedRoute>}
+        </Route>
+        <Route path="/admin/novo-artigo">
+          {() => <ProtectedRoute><AdminPostEditor /></ProtectedRoute>}
+        </Route>
+        <Route path="/admin/editar-artigo/:id">
+          {(params) => <ProtectedRoute><AdminPostEditor /></ProtectedRoute>}
+        </Route>
+        <Route path="/admin/ebook-editor">
+          {() => <ProtectedRoute><AdminEbookEditor /></ProtectedRoute>}
+        </Route>
+        <Route path="/admin/editar-ebook/:id">
+          {(params) => <ProtectedRoute><AdminEbookEditor /></ProtectedRoute>}
+        </Route>
         <Route component={NotFound} />
       </Switch>
     </Layout>
@@ -58,14 +93,16 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

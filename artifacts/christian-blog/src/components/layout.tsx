@@ -53,6 +53,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
+
+      {/* Fixed watermark cross */}
+      <div className="fixed bottom-6 right-6 z-50 pointer-events-none select-none">
+        <span className="font-serif text-4xl text-foreground/8 leading-none">†</span>
+      </div>
     </div>
   );
 }

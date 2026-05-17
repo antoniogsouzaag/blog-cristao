@@ -3,6 +3,8 @@ import { useGetPost, useListComments, useCreateComment, getListCommentsQueryKey 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { VerseBlock } from "@/components/verse-block";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -135,10 +137,11 @@ export default function Article() {
           {post.bibleVerse && post.bibleReference && (
             <VerseBlock verse={post.bibleVerse} reference={post.bibleReference} />
           )}
-          <div
-            className="mt-12 whitespace-pre-wrap first-letter:float-left first-letter:font-serif first-letter:text-7xl first-letter:pr-4 first-letter:pt-2 first-letter:text-primary"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          <div className="mt-12 first-letter:float-left first-letter:font-serif first-letter:text-7xl first-letter:pr-4 first-letter:pt-2 first-letter:text-primary">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {post.content}
+            </ReactMarkdown>
+          </div>
         </div>
 
         {/* Meta — at the footer of the article */}
