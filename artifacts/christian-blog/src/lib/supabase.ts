@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Anon key is public by design — safe to use as fallback for builds without ARG injection.
-// Project: pdkzkkwbawnrkadooemg — update VITE_SUPABASE_ANON_KEY build arg if key changes.
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "https://pdkzkkwbawnrkadooemg.supabase.co";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "COLE_AQUI_A_ANON_KEY_DO_NOVO_PROJETO";
+// VITE_* vars are baked in at build time by Vite.
+// In Docker: injected via ARG defaults in Dockerfile (project pdkzkkwbawnrkadooemg).
+// In local dev: read from .env.local.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

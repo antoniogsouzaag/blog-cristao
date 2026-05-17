@@ -14,9 +14,11 @@ RUN pnpm --filter @workspace/api-server build
 
 # ─── Build Frontend ──────────────────────────────────────────────────────────
 FROM base AS frontend-builder
-# Vite bakes VITE_* vars into the bundle at build time — pass via EasyPanel build args.
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
+# Vite bakes VITE_* vars into the bundle at build time.
+# Defaults embed the public anon key (safe — designed to be client-side).
+# Override via EasyPanel build args if the Supabase project changes.
+ARG VITE_SUPABASE_URL=https://pdkzkkwbawnrkadooemg.supabase.co
+ARG VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBka3pra3diYXducmthZG9vZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5ODAwNTEsImV4cCI6MjA5NDU1NjA1MX0.y-xJ8D4oAxSDkdqSFvc6eF0YLbFKQK7HmiI_nXnp8fs
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 WORKDIR /app
