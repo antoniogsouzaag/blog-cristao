@@ -76,7 +76,7 @@ export default function Admin() {
   const handleDeleteEbook = (id: number) => {
     if (confirm("Tem certeza que deseja remover este ebook? Esta ação é irreversível.")) {
       deleteEbook.mutate(
-        { id },
+        { ebookId: id },
         {
           onSuccess: () => {
             toast({ title: "Ebook removido do acervo." });

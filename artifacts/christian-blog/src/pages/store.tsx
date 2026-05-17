@@ -8,7 +8,7 @@ export default function Store() {
 
   const featured = allEbooks?.filter((e) => e.featured) ?? [];
   const onSale = allEbooks?.filter((e) => e.onSale && !e.featured) ?? [];
-  const rest = allEbooks?.filter((e) => !e.featured && !e.onSale) ?? [];
+  const allTitles = allEbooks ?? [];
 
   return (
     <div className="animate-in fade-in duration-1000">
@@ -37,6 +37,7 @@ export default function Store() {
             {featured.length > 0 && (
               <section>
                 <SectionHeader label="Destaques da Loja" />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
                   {featured.map((ebook) => (
                     <EbookCard key={ebook.id} ebook={ebook} />
@@ -57,12 +58,12 @@ export default function Store() {
               </section>
             )}
 
-            {/* Rest */}
-            {rest.length > 0 && (
+            {/* All titles */}
+            {allTitles.length > 0 && (
               <section>
-                <SectionHeader label="Todos os Titulos" />
+                <SectionHeader label="Todos os Títulos" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
-                  {rest.map((ebook) => (
+                  {allTitles.map((ebook) => (
                     <EbookCard key={ebook.id} ebook={ebook} />
                   ))}
                 </div>
@@ -103,12 +104,12 @@ export default function Store() {
 
 function SectionHeader({ label, badge }: { label: string; badge?: string }) {
   return (
-    <div className="border-b border-border/60 pb-4 mb-10 flex items-end gap-4">
-      <h2 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+    <div className="border-b border-border/60 pb-5 mb-10 flex items-end gap-4">
+      <h2 className="font-serif text-3xl md:text-4xl font-normal text-foreground tracking-tight">
         {label}
       </h2>
       {badge && (
-        <span className="font-mono text-[9px] uppercase tracking-widest text-background bg-primary px-2 py-0.5">
+        <span className="font-mono text-[9px] uppercase tracking-widest text-background bg-primary px-2 py-0.5 mb-1">
           {badge}
         </span>
       )}

@@ -115,7 +115,7 @@ export default function AdminEbookEditor() {
 
     if (isEditing && ebookId) {
       updateEbook.mutate(
-        { id: ebookId, data: { ...values, slug: ebook?.slug ?? slug } },
+        { ebookId: ebookId, data: { ...values, slug: ebook?.slug ?? slug } },
         {
           onSuccess: () => {
             toast({ title: "Ebook atualizado com sucesso." });

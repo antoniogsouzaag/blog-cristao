@@ -64,13 +64,17 @@ export default function Article() {
 
   if (isLoadingPost || !post) {
     return (
-      <div className="container mx-auto px-6 py-20 max-w-3xl animate-pulse">
-        <div className="w-full bg-muted/20 mb-16 border border-border" style={{ height: "clamp(260px, 42vw, 520px)" }} />
-        <div className="h-16 w-3/4 bg-muted/20 mx-auto mb-8" />
-        <div className="space-y-6 mt-16">
-          <div className="h-4 w-full bg-muted/20" />
-          <div className="h-4 w-full bg-muted/20" />
-          <div className="h-4 w-5/6 bg-muted/20" />
+      <div className="animate-pulse">
+        <div className="container mx-auto px-6 md:px-12 pt-10 max-w-4xl">
+          <div className="w-full bg-muted/20 border border-border/60" style={{ aspectRatio: "16/7", maxHeight: "460px" }} />
+        </div>
+        <div className="container mx-auto px-6 py-20 max-w-3xl">
+          <div className="h-16 w-3/4 bg-muted/20 mx-auto mb-8" />
+          <div className="space-y-6 mt-16">
+            <div className="h-4 w-full bg-muted/20" />
+            <div className="h-4 w-full bg-muted/20" />
+            <div className="h-4 w-5/6 bg-muted/20" />
+          </div>
         </div>
       </div>
     );
@@ -81,12 +85,16 @@ export default function Article() {
 
       {/* Hero image — top of page */}
       {post.imageUrl && (
-        <div className="w-full relative overflow-hidden border-b border-border" style={{ height: "clamp(260px, 42vw, 520px)" }}>
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className="absolute inset-0 w-full h-full object-cover object-center saturate-[0.85] contrast-[0.95]"
-          />
+        <div className="container mx-auto px-6 md:px-12 pt-10 max-w-4xl">
+          <div className="relative w-full overflow-hidden border border-border/60" style={{ aspectRatio: "16/7", maxHeight: "460px" }}>
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              className="absolute inset-0 w-full h-full object-cover object-center"
+              style={{ filter: "saturate(0.88) contrast(0.93) brightness(0.97)" }}
+            />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 55%, rgba(var(--background-rgb,10,8,6),0.18) 100%)" }} />
+          </div>
         </div>
       )}
 
