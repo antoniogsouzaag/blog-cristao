@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
 import {
-  useGetBlogStats,
   useListPosts,
   useDeletePost,
   getListPostsQueryKey,
@@ -40,7 +39,6 @@ const categorySchema = z.object({
 
 export default function Admin() {
   const { signOut } = useAuth();
-  const { data: stats, isLoading: isLoadingStats } = useGetBlogStats();
   const { data: posts, isLoading: isLoadingPosts } = useListPosts();
   const { data: categories, isLoading: isLoadingCategories } = useListCategories();
   const { data: ebooks, isLoading: isLoadingEbooks } = useListEbooks({});
@@ -55,11 +53,7 @@ export default function Admin() {
 
   const categoryForm = useForm<z.infer<typeof categorySchema>>({
     resolver: zodResolver(categorySchema),
-    defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-    },
+    defaultValues: { name: "", slug: "", description: "" },
   });
 
   const handleDeletePost = (id: number) => {
@@ -73,7 +67,7 @@ export default function Admin() {
           },
           onError: () => {
             toast({ variant: "destructive", title: "Erro ao processar remoção." });
-          }
+          },
         }
       );
     }
@@ -108,21 +102,24 @@ export default function Admin() {
         },
         onError: () => {
           toast({ variant: "destructive", title: "Erro ao criar coleção." });
-        }
+        },
       }
     );
   };
 
   return (
     <div className="container mx-auto px-6 py-16 max-w-6xl animate-in fade-in duration-1000">
+
+      {/* Header */}
       <div className="border-b border-border pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-foreground mb-2">
             Administração do Acervo
           </h1>
-          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Gestão de publicações e coleções</p>
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Gestão de publicações e coleções
+          </p>
         </div>
-        
         <div className="flex items-center gap-6">
           <button
             onClick={() => signOut()}
@@ -132,92 +129,95 @@ export default function Admin() {
           </button>
           <Link href="/admin/novo-artigo">
             <Button className="bg-transparent text-foreground border border-border hover:bg-primary/5 hover:text-primary hover:border-primary transition-colors font-mono text-[10px] uppercase tracking-widest px-6 rounded-none w-full md:w-auto h-12">
-              Escrever Novo Artigo
+              + Novo Artigo
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Stats Desk */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-16 border border-border">
-        {isLoadingStats ? (
-          Array(4).fill(0).map((_, i) => <div key={i} className="h-32 bg-background animate-pulse" />)
-        ) : stats ? (
-          <>
-            <StatCard label="Artigos" value={stats.totalPosts} />
-            <StatCard label="Coleções" value={stats.totalCategories} />
-            <StatCard label="Anotações" value={stats.totalComments} />
-            <StatCard label="Em Destaque" value={stats.featuredCount} />
-          </>
-        ) : null}
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-16">
-        {/* Posts Archive */}
-        <div>
-          <div className="border-b border-border pb-4 mb-8 flex justify-between items-end">
-            <h2 className="font-serif italic text-2xl text-foreground">Registro de Manuscritos</h2>
-          </div>
-          
-          <div className="border-t border-border">
-            {isLoadingPosts ? (
-              <div className="space-y-4 py-4">
-                {[1, 2, 3].map(i => <div key={i} className="h-24 bg-muted/10 animate-pulse border-b border-border/50" />)}
-              </div>
-            ) : posts && posts.length > 0 ? (
-              <div className="divide-y divide-border/50">
-                {posts.map(post => (
-                  <div key={post.id} className="py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:bg-muted/5 transition-colors -mx-4 px-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-primary/70">
-                          {post.category?.name || "Sem coleção"}
-                        </span>
-                        {post.featured && (
-                          <span className="font-mono text-[9px] uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 border border-primary/20">
-                            Em Destaque
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-serif text-xl text-foreground mb-2">
-                        {post.title}
-                      </h3>
-                      <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-                        Data de Registro: {format(new Date(post.publishedAt), "dd.MM.yyyy", { locale: ptBR })}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest">
-                      <Link href={`/admin/editar-artigo/${post.id}`} className="text-foreground hover:text-primary transition-colors pb-1 border-b border-transparent hover:border-primary">
-                        Editar
-                      </Link>
-                      <button 
-                        onClick={() => handleDeletePost(post.id)}
-                        disabled={deletePost.isPending}
-                        className="text-muted-foreground hover:text-destructive transition-colors pb-1 border-b border-transparent hover:border-destructive"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-16 text-center">
-                <p className="font-serif italic text-muted-foreground">O arquivo está vazio no momento.</p>
-              </div>
+        {/* Posts List */}
+        <section>
+          <div className="border-b border-border pb-4 mb-6 flex justify-between items-baseline">
+            <h2 className="font-serif italic text-2xl text-foreground">Artigos</h2>
+            {!isLoadingPosts && posts && (
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
+              </span>
             )}
           </div>
-        </div>
 
-        {/* Categories Manager */}
-        <div>
-          <div className="border-b border-border pb-4 mb-8 flex justify-between items-end">
+          {isLoadingPosts ? (
+            <div className="space-y-px">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
+              ))}
+            </div>
+          ) : posts && posts.length > 0 ? (
+            <ul className="divide-y divide-border/40">
+              {posts.map(post => (
+                <li key={post.id} className="py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      {post.category && (
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
+                          {post.category.name}
+                        </span>
+                      )}
+                      {post.featured && (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
+                          Destaque
+                        </span>
+                      )}
+                      <span className="font-mono text-[9px] text-muted-foreground/60 ml-auto sm:ml-0">
+                        {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-lg leading-snug text-foreground truncate">
+                      {post.title}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest pt-1">
+                    <Link
+                      href={`/artigos/${post.id}`}
+                      className="text-muted-foreground/60 hover:text-foreground transition-colors"
+                      target="_blank"
+                    >
+                      Ver
+                    </Link>
+                    <Link
+                      href={`/admin/editar-artigo/${post.id}`}
+                      className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
+                    >
+                      Editar
+                    </Link>
+                    <button
+                      onClick={() => handleDeletePost(post.id)}
+                      disabled={deletePost.isPending}
+                      className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="py-16 text-center border border-border/40 border-dashed">
+              <p className="font-serif italic text-muted-foreground text-sm">O arquivo está vazio no momento.</p>
+            </div>
+          )}
+        </section>
+
+        {/* Sidebar: Categories */}
+        <aside>
+          <div className="border-b border-border pb-4 mb-6 flex justify-between items-baseline">
             <h2 className="font-serif italic text-2xl text-foreground">Coleções</h2>
             <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
               <DialogTrigger asChild>
-                <button className="font-mono text-[10px] uppercase tracking-widest text-primary pb-1 border-b border-transparent hover:border-primary transition-colors">
-                  Nova Coleção
+                <button className="font-mono text-[10px] uppercase tracking-widest text-primary pb-0.5 border-b border-transparent hover:border-primary transition-colors">
+                  + Nova
                 </button>
               </DialogTrigger>
               <DialogContent className="rounded-none border-border bg-background p-8 max-w-md">
@@ -231,9 +231,13 @@ export default function Admin() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome da Coleção</FormLabel>
+                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg" {...field} />
+                            <Input
+                              placeholder="Ex: Devocionais"
+                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -246,7 +250,11 @@ export default function Admin() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Identificador (URL)</FormLabel>
                           <FormControl>
-                            <Input placeholder="ex-devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
+                            <Input
+                              placeholder="ex-devocionais"
+                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -257,15 +265,22 @@ export default function Admin() {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Breve Descrição</FormLabel>
+                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Descrição</FormLabel>
                           <FormControl>
-                            <Textarea className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y" {...field} />
+                            <Textarea
+                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full bg-transparent text-foreground border border-border hover:bg-muted/50 hover:text-primary transition-colors font-mono text-xs uppercase tracking-widest rounded-none h-12 mt-4" disabled={createCategory.isPending}>
+                    <Button
+                      type="submit"
+                      className="w-full bg-transparent text-foreground border border-border hover:bg-muted/50 hover:text-primary transition-colors font-mono text-xs uppercase tracking-widest rounded-none h-12 mt-4"
+                      disabled={createCategory.isPending}
+                    >
                       {createCategory.isPending ? "Registrando..." : "Registrar Coleção"}
                     </Button>
                   </form>
@@ -274,39 +289,46 @@ export default function Admin() {
             </Dialog>
           </div>
 
-          <div className="border border-border p-6 bg-background">
-            {isLoadingCategories ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => <div key={i} className="h-10 bg-muted/10 animate-pulse border-b border-border/50" />)}
-              </div>
-            ) : categories && categories.length > 0 ? (
-              <ul className="divide-y divide-border/50">
-                {categories.map(category => (
-                  <li key={category.id} className="flex justify-between items-baseline py-4 first:pt-0 last:pb-0">
-                    <span className="font-serif text-lg text-foreground">{category.name}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {category.postCount} {category.postCount === 1 ? 'item' : 'itens'}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center font-serif italic text-muted-foreground py-6">
-                O arquivo de coleções está vazio.
-              </p>
-            )}
-          </div>
-        </div>
+          {isLoadingCategories ? (
+            <div className="space-y-px">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-12 bg-muted/10 animate-pulse border-b border-border/30" />
+              ))}
+            </div>
+          ) : categories && categories.length > 0 ? (
+            <ul className="divide-y divide-border/40">
+              {categories.map(category => (
+                <li key={category.id} className="py-3.5 flex justify-between items-center gap-3">
+                  <div className="min-w-0">
+                    <p className="font-serif text-base text-foreground leading-tight truncate">{category.name}</p>
+                    <p className="font-mono text-[9px] text-muted-foreground/50 mt-0.5">{category.slug}</p>
+                  </div>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground shrink-0 tabular-nums">
+                    {category.postCount} {category.postCount === 1 ? "item" : "itens"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="py-10 text-center border border-border/40 border-dashed">
+              <p className="font-serif italic text-muted-foreground text-sm">Nenhuma coleção criada.</p>
+            </div>
+          )}
+        </aside>
       </div>
 
       {/* Ebooks Section */}
-      <div className="mt-20">
-        <div className="border-b border-border pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="mt-20 pt-12 border-t border-border">
+        <div className="pb-6 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h2 className="font-serif text-3xl font-normal tracking-tight text-foreground mb-2">
-              Acervo de Ebooks
+            <h2 className="font-serif text-3xl font-normal tracking-tight text-foreground mb-1">
+              Ebooks
             </h2>
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Gestão de publicações digitais</p>
+            {!isLoadingEbooks && ebooks && (
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                {ebooks.length} {ebooks.length === 1 ? "título no acervo" : "títulos no acervo"}
+              </p>
+            )}
           </div>
           <Link href="/admin/ebook-editor">
             <Button className="bg-transparent text-foreground border border-border hover:bg-primary/5 hover:text-primary hover:border-primary transition-colors font-mono text-[10px] uppercase tracking-widest px-6 rounded-none w-full md:w-auto h-12">
@@ -315,70 +337,72 @@ export default function Admin() {
           </Link>
         </div>
 
-        <div className="border-t border-border">
-          {isLoadingEbooks ? (
-            <div className="space-y-4 py-4">
-              {[1, 2, 3].map(i => <div key={i} className="h-24 bg-muted/10 animate-pulse border-b border-border/50" />)}
-            </div>
-          ) : ebooks && ebooks.length > 0 ? (
-            <div className="divide-y divide-border/50">
-              {ebooks.map(ebook => (
-                <div key={ebook.id} className="py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:bg-muted/5 transition-colors -mx-4 px-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-primary/70">
+        {isLoadingEbooks ? (
+          <div className="space-y-px">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
+            ))}
+          </div>
+        ) : ebooks && ebooks.length > 0 ? (
+          <ul className="divide-y divide-border/40 border-t border-border">
+            {ebooks.map(ebook => (
+              <li key={ebook.id} className="py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    {ebook.category && (
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
                         {ebook.category}
                       </span>
-                      {ebook.featured && (
-                        <span className="font-mono text-[9px] uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 border border-primary/20">
-                          Em Destaque
-                        </span>
-                      )}
-                      {ebook.onSale && (
-                        <span className="font-mono text-[9px] uppercase tracking-widest bg-amber-500/10 text-amber-600 px-2 py-0.5 border border-amber-500/20">
-                          Promoção
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-serif text-xl text-foreground mb-2">
-                      {ebook.title}
-                    </h3>
-                    <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-                      R$ {ebook.price ?? "0"}
-                    </p>
+                    )}
+                    {ebook.featured && (
+                      <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
+                        Destaque
+                      </span>
+                    )}
+                    {ebook.onSale && (
+                      <span className="font-mono text-[8px] uppercase tracking-widest bg-amber-500/10 text-amber-600 px-1.5 py-0.5 border border-amber-500/20">
+                        Promoção
+                      </span>
+                    )}
                   </div>
-
-                  <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest">
-                    <Link href={`/admin/editar-ebook/${ebook.id}`} className="text-foreground hover:text-primary transition-colors pb-1 border-b border-transparent hover:border-primary">
-                      Editar
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteEbook(ebook.id)}
-                      disabled={deleteEbook.isPending}
-                      className="text-muted-foreground hover:text-destructive transition-colors pb-1 border-b border-transparent hover:border-destructive"
-                    >
-                      Remover
-                    </button>
-                  </div>
+                  <h3 className="font-serif text-lg leading-snug text-foreground truncate mb-1">
+                    {ebook.title}
+                  </h3>
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    R$ {ebook.price ?? "0,00"}
+                  </p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-16 text-center">
-              <p className="font-serif italic text-muted-foreground">O acervo de ebooks está vazio no momento.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string, value: number }) {
-  return (
-    <div className="bg-background p-6 md:p-8 flex flex-col items-center justify-center text-center">
-      <p className="text-4xl md:text-5xl font-serif text-foreground mb-3 font-normal">{value}</p>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
+                <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest pt-1">
+                  <Link
+                    href={`/loja/${ebook.id}`}
+                    className="text-muted-foreground/60 hover:text-foreground transition-colors"
+                    target="_blank"
+                  >
+                    Ver
+                  </Link>
+                  <Link
+                    href={`/admin/editar-ebook/${ebook.id}`}
+                    className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
+                  >
+                    Editar
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteEbook(ebook.id)}
+                    disabled={deleteEbook.isPending}
+                    className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
+                  >
+                    Remover
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="py-16 text-center border border-border/40 border-dashed">
+            <p className="font-serif italic text-muted-foreground text-sm">O acervo de ebooks está vazio no momento.</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

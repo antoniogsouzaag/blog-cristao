@@ -154,13 +154,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Lead Capture Section */}
-      <section className="border-t border-b border-border/60 bg-[#f5f0e8] dark:bg-card/60">
-        <div className="container mx-auto px-6 md:px-12 py-16 md:py-20 max-w-2xl">
-          <LeadCaptureForm />
-        </div>
-      </section>
-
       {/* Recent Posts Section */}
       <section className="container mx-auto px-6 md:px-12 py-16 md:py-24">
         <div className="border-b border-border/60 pb-6 mb-12 flex justify-between items-end">
@@ -194,6 +187,13 @@ export default function Home() {
         ) : (
           <p className="text-muted-foreground font-serif italic">Ainda não há publicações.</p>
         )}
+      </section>
+
+      {/* Lead Capture Section */}
+      <section className="border-t border-border/60 bg-[#f5f0e8] dark:bg-card/60">
+        <div className="container mx-auto px-6 md:px-12 py-16 md:py-20 max-w-2xl">
+          <LeadCaptureForm />
+        </div>
       </section>
     </div>
   );

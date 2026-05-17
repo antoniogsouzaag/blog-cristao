@@ -65,7 +65,7 @@ export default function Article() {
   if (isLoadingPost || !post) {
     return (
       <div className="container mx-auto px-6 py-20 max-w-3xl animate-pulse">
-        <div className="aspect-[21/9] w-full bg-muted/20 mb-16 border border-border" />
+        <div className="w-full bg-muted/20 mb-16 border border-border" style={{ height: "clamp(260px, 42vw, 520px)" }} />
         <div className="h-16 w-3/4 bg-muted/20 mx-auto mb-8" />
         <div className="space-y-6 mt-16">
           <div className="h-4 w-full bg-muted/20" />
@@ -81,12 +81,11 @@ export default function Article() {
 
       {/* Hero image — top of page */}
       {post.imageUrl && (
-        <div className="w-full overflow-hidden border-b border-border" style={{ maxHeight: "520px" }}>
+        <div className="w-full relative overflow-hidden border-b border-border" style={{ height: "clamp(260px, 42vw, 520px)" }}>
           <img
             src={post.imageUrl}
             alt={post.title}
-            className="w-full h-full object-cover filter saturate-[0.85] contrast-[0.95]"
-            style={{ maxHeight: "520px" }}
+            className="absolute inset-0 w-full h-full object-cover object-center saturate-[0.85] contrast-[0.95]"
           />
         </div>
       )}
