@@ -6,7 +6,7 @@ export default function About() {
           Nossa História
         </h1>
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          Sobre o Blog Cristão
+          Sobre o Fonte Viva
         </p>
       </div>
 
@@ -16,7 +16,7 @@ export default function About() {
         </blockquote>
 
         <p className="first-letter:float-left first-letter:font-serif first-letter:text-7xl first-letter:pr-4 first-letter:pt-2 first-letter:text-primary">
-          O Blog Cristão nasceu do profundo desejo de criar um refúgio literário digital para crentes de todo o Brasil. Em um mundo cada vez mais acelerado, saturado de ruídos e distrações efêmeras, acreditamos na necessidade vital de cultivarmos espaços de pausa, silêncio e conexão atenta com a Palavra.
+          O Fonte Viva nasceu do profundo desejo de criar um refúgio literário digital para crentes de todo o Brasil. Assim como a água viva prometida em João 4:14 jamais deixa o coração sedento, buscamos ser um espaço de pausa, silêncio e conexão atenta com a Palavra — em meio a um mundo acelerado, saturado de ruídos e distrações efêmeras.
         </p>
 
         <p>

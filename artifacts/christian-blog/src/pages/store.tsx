@@ -16,7 +16,7 @@ export default function Store() {
       <div className="border-b border-border/60 bg-background">
         <div className="container mx-auto px-6 md:px-12 py-16 md:py-20">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground block mb-4">
-            Recursos Cristãos
+            Acervo Fonte Viva
           </span>
           <h1 className="font-serif text-4xl md:text-6xl font-normal text-foreground mb-4 leading-tight">
             Loja de Ebooks

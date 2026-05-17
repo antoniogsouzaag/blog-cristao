@@ -11,9 +11,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between py-6 md:py-8 gap-6 border-b border-border/50">
             <div className="text-center md:text-left">
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">Publicação Literária Diária</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">Palavra que edifica, graça que transforma</span>
               <Link href="/" className="font-serif text-3xl md:text-4xl font-normal tracking-tight text-foreground hover:text-primary transition-colors block">
-                Blog Cristão.
+                Fonte Viva.
               </Link>
             </div>
             
@@ -47,7 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="w-full h-px bg-gradient-to-r from-transparent via-border to-transparent mb-12" />
           
           <div className="flex flex-col md:flex-row justify-between w-full font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60">
-            <span>&copy; {new Date().getFullYear()} Blog Cristão</span>
+            <span>&copy; {new Date().getFullYear()} Fonte Viva</span>
             <span className="mt-4 md:mt-0">Todos os direitos reservados</span>
           </div>
         </div>

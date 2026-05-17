@@ -12,6 +12,9 @@ export default function Home() {
 
   const primaryFeatured = featuredPosts?.[0];
   const secondaryFeatured = featuredPosts?.slice(1, 4) || [];
+  const sortedRecent = recentPosts
+    ? [...recentPosts].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    : undefined;
 
   return (
     <div className="animate-in fade-in duration-1000">
@@ -20,7 +23,7 @@ export default function Home() {
       <section className="relative w-full overflow-hidden" style={{ height: "70vh", minHeight: "480px", maxHeight: "700px" }}>
         <img
           src="/images/hero-banner.png"
-          alt="Blog Cristão"
+          alt="Fonte Viva"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ filter: "saturate(0.7) brightness(0.55)" }}
         />
@@ -119,7 +122,7 @@ export default function Home() {
             <div className="border-b border-border/60 pb-6 mb-12 flex justify-between items-end">
               <div>
                 <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground block mb-3">
-                  Recursos Cristãos
+                  Acervo Fonte Viva
                 </span>
                 <h2 className="font-serif text-4xl md:text-5xl font-normal text-foreground tracking-tight">
                   Loja de Ebooks
@@ -178,9 +181,9 @@ export default function Home() {
               </div>
             ))}
           </div>
-        ) : recentPosts && recentPosts.length > 0 ? (
+        ) : sortedRecent && sortedRecent.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
-            {recentPosts.map(post => (
+            {sortedRecent.map(post => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
