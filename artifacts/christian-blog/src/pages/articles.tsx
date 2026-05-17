@@ -38,7 +38,7 @@ export default function Articles() {
             <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input 
               placeholder="Buscar por título ou conteúdo..." 
-              className="pl-8 bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 text-foreground placeholder:text-muted-foreground/50 font-serif italic text-lg"
+              className="pl-8 pr-2 bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary text-foreground placeholder:text-muted-foreground/50 font-serif italic text-lg"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

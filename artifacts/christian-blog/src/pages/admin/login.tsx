@@ -55,7 +55,7 @@ export default function AdminLogin() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="seu@email.com"
-              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic text-lg"
+              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif italic text-lg"
             />
           </div>
 
@@ -68,7 +68,7 @@ export default function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-lg"
+              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg"
             />
           </div>
 

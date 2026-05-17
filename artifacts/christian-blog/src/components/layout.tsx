@@ -55,7 +55,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Fixed watermark cross */}
       <div className="fixed bottom-5 right-7 z-50 pointer-events-none select-none">
-        <span className="font-serif text-7xl text-foreground/25 leading-none">†</span>
+        <svg width="52" height="68" viewBox="0 0 52 68" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground/20">
+          <rect x="21" y="0" width="10" height="68" fill="currentColor" />
+          <rect x="0" y="18" width="52" height="10" fill="currentColor" />
+        </svg>
       </div>
     </div>
   );

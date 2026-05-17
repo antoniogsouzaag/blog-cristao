@@ -186,7 +186,7 @@ export default function AdminEbookEditor() {
                     <FormControl>
                       <Input
                         placeholder="O título da obra..."
-                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-2xl"
+                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-2xl"
                         {...field}
                       />
                     </FormControl>
@@ -204,7 +204,7 @@ export default function AdminEbookEditor() {
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Categoria</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-0 font-serif text-lg h-10 shadow-none">
+                          <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-2 font-serif text-lg h-10 shadow-none">
                             <SelectValue placeholder="Escolha uma categoria..." />
                           </SelectTrigger>
                         </FormControl>
@@ -230,7 +230,7 @@ export default function AdminEbookEditor() {
                       <FormControl>
                         <Input
                           placeholder="Nome do autor"
-                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-lg"
+                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg"
                           {...field}
                         />
                       </FormControl>
@@ -249,7 +249,7 @@ export default function AdminEbookEditor() {
                     <FormControl>
                       <Textarea
                         placeholder="Um breve resumo do que trata este ebook..."
-                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-sans font-light resize-y min-h-[80px]"
+                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y min-h-[80px]"
                         {...field}
                       />
                     </FormControl>
@@ -272,7 +272,7 @@ export default function AdminEbookEditor() {
                       <FormControl>
                         <Input
                           placeholder='0 ou "19.90"'
-                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm"
+                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                           {...field}
                         />
                       </FormControl>
@@ -290,7 +290,7 @@ export default function AdminEbookEditor() {
                       <FormControl>
                         <Input
                           placeholder='"34.90"'
-                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm"
+                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                           {...field}
                         />
                       </FormControl>
@@ -309,7 +309,7 @@ export default function AdminEbookEditor() {
                         <Input
                           type="number"
                           placeholder="Ex: 120"
-                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm"
+                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.value)}
@@ -358,7 +358,7 @@ export default function AdminEbookEditor() {
                     <FormControl>
                       <Input
                         placeholder="https://..."
-                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm"
+                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                         {...field}
                       />
                     </FormControl>
@@ -376,7 +376,7 @@ export default function AdminEbookEditor() {
                     <FormControl>
                       <Input
                         placeholder="https://..."
-                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm"
+                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                         {...field}
                       />
                     </FormControl>

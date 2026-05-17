@@ -252,8 +252,8 @@ async function seed() {
 
   // Update image URLs for existing posts
   const imageUpdates = [
-    { slug: "a-paz-que-excede-todo-entendimento", imageUrl: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&auto=format&fit=crop&q=80" },
-    { slug: "o-poder-transformador-da-oracao", imageUrl: "https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=800&auto=format&fit=crop&q=80" },
+    { slug: "a-paz-que-excede-todo-entendimento", imageUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&auto=format&fit=crop&q=80" },
+    { slug: "o-poder-transformador-da-oracao", imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=80" },
     { slug: "construindo-sua-familia-sobre-a-rocha", imageUrl: "https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&auto=format&fit=crop&q=80" },
     { slug: "salmo-23-o-senhor-e-o-meu-pastor", imageUrl: "https://images.unsplash.com/photo-1500622944204-b135684e99fd?w=800&auto=format&fit=crop&q=80" },
     { slug: "como-estudar-a-biblia-de-forma-eficaz", imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop&q=80" },
@@ -272,7 +272,7 @@ async function seed() {
       description: "Um guia devocional de 30 dias com orações temáticas para cada área da vida: família, trabalho, saúde, propósito e fé. Cada dia traz um versículo âncora, uma oração guiada e uma reflexão para aprofundar seu diálogo com Deus.",
       excerpt: "Um devocional de 30 dias com orações transformadoras para cada área da sua vida.",
       authorName: "Equipe Blog Cristão",
-      coverUrl: "https://images.unsplash.com/photo-1604580864964-0462f5d5b1a8?w=400&auto=format&fit=crop&q=80",
+      coverUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400&auto=format&fit=crop&q=80",
       price: "0",
       category: "devocional",
       featured: true,
@@ -316,6 +316,19 @@ async function seed() {
     .onConflictDoNothing()
     .returning();
   console.log(`  ${insertedEbooks.length} ebooks inseridos.`);
+
+  // Update cover URLs for existing ebooks
+  const ebookCoverUpdates = [
+    { slug: "30-dias-de-oracoes-que-transformam", coverUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400&auto=format&fit=crop&q=80" },
+    { slug: "guia-de-estudo-biblico-para-iniciantes", coverUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&auto=format&fit=crop&q=80" },
+    { slug: "a-familia-nos-fundamentos-da-escritura", coverUrl: "https://images.unsplash.com/photo-1511895426328-dc8714191011?w=400&auto=format&fit=crop&q=80" },
+  ];
+
+  console.log("Atualizando capas dos ebooks...");
+  for (const { slug, coverUrl } of ebookCoverUpdates) {
+    await db.update(ebooksTable).set({ coverUrl }).where(eq(ebooksTable.slug, slug));
+  }
+  console.log("  Capas atualizadas.");
 
   console.log("Seed concluído com sucesso!");
   await pool.end();

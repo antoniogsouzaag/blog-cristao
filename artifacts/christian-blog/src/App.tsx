@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/layout";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { Component, type ReactNode, type ErrorInfo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { AuthProvider } from "@/contexts/auth-context";
@@ -60,6 +61,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Layout>
+      <ScrollToTop />
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/artigos" component={Articles} />

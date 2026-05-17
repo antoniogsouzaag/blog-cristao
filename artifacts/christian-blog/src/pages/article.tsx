@@ -8,14 +8,13 @@ import remarkGfm from "remark-gfm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { customFetch } from "@workspace/api-client-react";
+import { LeadCaptureForm } from "@/components/lead-capture-form";
 
 const commentSchema = z.object({
   authorName: z.string().min(2, "Nome é muito curto"),
@@ -23,19 +22,11 @@ const commentSchema = z.object({
   content: z.string().min(5, "O comentário deve ter pelo menos 5 caracteres"),
 });
 
-const leadSchema = z.object({
-  name: z.string().min(2, "Nome obrigatório"),
-  email: z.string().email("Email inválido"),
-  whatsapp: z.string().optional().or(z.literal("")),
-});
-
 export default function Article() {
   const { id } = useParams<{ id: string }>();
   const postId = Number(id);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [leadSent, setLeadSent] = useState(false);
-  const [leadPending, setLeadPending] = useState(false);
 
   const { data: post, isLoading: isLoadingPost, isError } = useGetPost(postId);
   const { data: comments, isLoading: isLoadingComments } = useListComments(postId);
@@ -44,11 +35,6 @@ export default function Article() {
   const commentForm = useForm<z.infer<typeof commentSchema>>({
     resolver: zodResolver(commentSchema),
     defaultValues: { authorName: "", authorEmail: "", content: "" },
-  });
-
-  const leadForm = useForm<z.infer<typeof leadSchema>>({
-    resolver: zodResolver(leadSchema),
-    defaultValues: { name: "", email: "", whatsapp: "" },
   });
 
   const onCommentSubmit = (values: z.infer<typeof commentSchema>) => {
@@ -65,22 +51,6 @@ export default function Article() {
         }
       }
     );
-  };
-
-  const onLeadSubmit = async (values: z.infer<typeof leadSchema>) => {
-    setLeadPending(true);
-    try {
-      await customFetch("/api/leads", {
-        method: "POST",
-        body: JSON.stringify({ ...values, postId }),
-      });
-      setLeadSent(true);
-      toast({ title: "Cadastro realizado!", description: "Você receberá nossas publicações em breve." });
-    } catch {
-      toast({ variant: "destructive", title: "Erro ao cadastrar", description: "Por favor, tente novamente." });
-    } finally {
-      setLeadPending(false);
-    }
   };
 
   if (isError) {
@@ -165,106 +135,47 @@ export default function Article() {
           <div className="w-12 h-px bg-border/80" />
         </div>
 
-        {/* Lead capture form */}
-        <section className="mb-24 border border-border/50 bg-[#f5f0e8] dark:bg-card/60 p-8 md:p-12 relative">
-          <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary/20" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-primary/20" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-primary/20" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-primary/20" />
-
-          {leadSent ? (
-            <div className="text-center py-6">
-              <p className="font-serif text-2xl italic text-foreground mb-2">Que alegria ter você conosco!</p>
-              <p className="font-sans font-light text-sm text-muted-foreground">
-                Você receberá nossas próximas publicações por email.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="mb-8">
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">Publicações Exclusivas</span>
-                <h3 className="font-serif text-2xl font-normal text-foreground">Receba novos artigos por email</h3>
-              </div>
-              <Form {...leadForm}>
-                <form onSubmit={leadForm.handleSubmit(onLeadSubmit)} className="space-y-6">
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <FormField
-                      control={leadForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Seu nome"
-                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="font-mono text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={leadForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="seu@email.com"
-                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="font-mono text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={leadForm.control}
-                    name="whatsapp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                          WhatsApp <span className="opacity-50 normal-case">(opcional)</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="(11) 99999-9999"
-                            className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="font-mono text-[10px]" />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    disabled={leadPending}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 font-mono text-[10px] uppercase tracking-widest px-8 rounded-none h-11"
-                  >
-                    {leadPending ? "Cadastrando..." : "Quero receber"}
-                  </Button>
-                </form>
-              </Form>
-            </>
-          )}
-        </section>
-
-        {/* Comments Section */}
-        <section id="comments" className="max-w-2xl mx-auto">
+        {/* 1. Comments Section */}
+        <section id="comments" className="max-w-2xl mx-auto mb-24">
           <div className="border-b border-border/60 pb-4 mb-12">
             <h2 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
               Anotações e Reflexões ({comments?.length || 0})
             </h2>
           </div>
 
-          <div className="mb-16 border border-border/50 bg-background/50 p-8 md:p-12 relative">
+          {isLoadingComments ? (
+            <div className="space-y-12 mb-16">
+              {[1, 2].map(i => (
+                <div key={i} className="flex gap-6 animate-pulse">
+                  <div className="flex-1 space-y-4">
+                    <div className="h-4 w-32 bg-muted/20" />
+                    <div className="h-20 w-full bg-muted/20" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : comments && comments.length > 0 ? (
+            <div className="space-y-12 mb-16">
+              {comments.map(comment => (
+                <div key={comment.id} className="border-b border-border/30 pb-12 last:border-0 last:pb-0">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="font-serif italic text-lg text-foreground">{comment.authorName}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {format(new Date(comment.createdAt), "dd.MM.yyyy", { locale: ptBR })}
+                    </span>
+                  </div>
+                  <p className="font-sans font-light text-foreground/80 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center font-serif italic text-muted-foreground py-12 border border-border/20 mb-16">
+              O silêncio preenche as margens deste texto. Seja o primeiro a deixar uma anotação.
+            </p>
+          )}
+
+          {/* 2. Comment submission form */}
+          <div className="border border-border/50 bg-background/50 p-8 md:p-12 relative">
             <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary/20" />
             <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-primary/20" />
             <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-primary/20" />
@@ -282,7 +193,7 @@ export default function Article() {
                       <FormItem>
                         <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</FormLabel>
                         <FormControl>
-                          <Input placeholder="Como deseja ser chamado?" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic" {...field} />
+                          <Input placeholder="Como deseja ser chamado?" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif italic" {...field} />
                         </FormControl>
                         <FormMessage className="font-mono text-[10px]" />
                       </FormItem>
@@ -295,7 +206,7 @@ export default function Article() {
                       <FormItem>
                         <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Email (Privado)</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="Apenas para nosso registro" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic" {...field} />
+                          <Input type="email" placeholder="Apenas para nosso registro" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif italic" {...field} />
                         </FormControl>
                         <FormMessage className="font-mono text-[10px]" />
                       </FormItem>
@@ -321,38 +232,10 @@ export default function Article() {
               </form>
             </Form>
           </div>
-
-          {isLoadingComments ? (
-            <div className="space-y-12">
-              {[1, 2].map(i => (
-                <div key={i} className="flex gap-6 animate-pulse">
-                  <div className="flex-1 space-y-4">
-                    <div className="h-4 w-32 bg-muted/20" />
-                    <div className="h-20 w-full bg-muted/20" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : comments && comments.length > 0 ? (
-            <div className="space-y-12">
-              {comments.map(comment => (
-                <div key={comment.id} className="border-b border-border/30 pb-12 last:border-0 last:pb-0">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="font-serif italic text-lg text-foreground">{comment.authorName}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {format(new Date(comment.createdAt), "dd.MM.yyyy", { locale: ptBR })}
-                    </span>
-                  </div>
-                  <p className="font-sans font-light text-foreground/80 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center font-serif italic text-muted-foreground py-12 border border-border/20">
-              O silêncio preenche as margens deste texto. Seja o primeiro a deixar uma anotação.
-            </p>
-          )}
         </section>
+
+        {/* 3. Lead capture form */}
+        <LeadCaptureForm postId={postId} />
       </div>
     </article>
   );

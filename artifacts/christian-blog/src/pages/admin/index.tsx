@@ -233,7 +233,7 @@ export default function Admin() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome da Coleção</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-lg" {...field} />
+                            <Input placeholder="Ex: Devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg" {...field} />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -246,7 +246,7 @@ export default function Admin() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Identificador (URL)</FormLabel>
                           <FormControl>
-                            <Input placeholder="ex-devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm" {...field} />
+                            <Input placeholder="ex-devocionais" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -259,7 +259,7 @@ export default function Admin() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Breve Descrição</FormLabel>
                           <FormControl>
-                            <Textarea className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-sans font-light resize-y" {...field} />
+                            <Textarea className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y" {...field} />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>

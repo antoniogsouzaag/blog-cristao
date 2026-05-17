@@ -1,6 +1,7 @@
 import { useListFeaturedPosts, useListRecentPosts, useListEbooks } from "@workspace/api-client-react";
 import { PostCard } from "@/components/post-card";
 import { EbookCard } from "@/components/ebook-card";
+import { LeadCaptureForm } from "@/components/lead-capture-form";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -152,6 +153,13 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Lead Capture Section */}
+      <section className="border-t border-b border-border/60 bg-[#f5f0e8] dark:bg-card/60">
+        <div className="container mx-auto px-6 md:px-12 py-16 md:py-20 max-w-2xl">
+          <LeadCaptureForm />
+        </div>
+      </section>
 
       {/* Recent Posts Section */}
       <section className="container mx-auto px-6 md:px-12 py-16 md:py-24">

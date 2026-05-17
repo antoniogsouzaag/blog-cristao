@@ -166,7 +166,7 @@ export default function AdminPostEditor() {
                   <FormItem>
                     <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Título do Escrito</FormLabel>
                     <FormControl>
-                      <Input placeholder="O título da sua obra..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-2xl" {...field} />
+                      <Input placeholder="O título da sua obra..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-2xl" {...field} />
                     </FormControl>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
@@ -186,7 +186,7 @@ export default function AdminPostEditor() {
                         disabled={isLoadingCategories}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-0 font-serif text-lg h-10 shadow-none">
+                          <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-2 font-serif text-lg h-10 shadow-none">
                             <SelectValue placeholder="Escolha um tema..." />
                           </SelectTrigger>
                         </FormControl>
@@ -207,7 +207,7 @@ export default function AdminPostEditor() {
                     <FormItem>
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Assinatura</FormLabel>
                       <FormControl>
-                        <Input placeholder="Seu nome" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif text-lg" {...field} />
+                        <Input placeholder="Seu nome" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg" {...field} />
                       </FormControl>
                       <FormMessage className="font-mono text-[10px]" />
                     </FormItem>
@@ -222,7 +222,7 @@ export default function AdminPostEditor() {
                   <FormItem>
                     <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Prefácio (Exibido no Índice)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Um breve prelúdio do que trata este texto..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-sans font-light resize-y min-h-[80px]" {...field} />
+                      <Textarea placeholder="Um breve prelúdio do que trata este texto..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y min-h-[80px]" {...field} />
                     </FormControl>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
@@ -243,7 +243,7 @@ export default function AdminPostEditor() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Versículo Base</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="Transcreva o versículo..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-serif italic text-lg resize-none h-20" {...field} />
+                            <Textarea placeholder="Transcreva o versículo..." className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif italic text-lg resize-none h-20" {...field} />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -258,7 +258,7 @@ export default function AdminPostEditor() {
                         <FormItem>
                           <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Referência</FormLabel>
                           <FormControl>
-                            <Input placeholder="Livro, Capítulo, Verso" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm" {...field} />
+                            <Input placeholder="Livro, Capítulo, Verso" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
                           </FormControl>
                           <FormMessage className="font-mono text-[10px]" />
                         </FormItem>
@@ -299,7 +299,7 @@ export default function AdminPostEditor() {
                   <FormItem>
                     <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ilustração Principal (Opcional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="URL da imagem (http://...)" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-0 font-mono text-sm" {...field} />
+                      <Input placeholder="URL da imagem (http://...)" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
                     </FormControl>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
