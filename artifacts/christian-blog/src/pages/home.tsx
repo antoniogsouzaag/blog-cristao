@@ -67,7 +67,13 @@ export default function Home() {
       {/* Secondary Featured — below the banner */}
       {secondaryFeatured.length > 0 && (
         <section className="border-b border-border/60">
-          <div className="container mx-auto px-6 md:px-12 py-0">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="border-b border-border/60 py-8 flex items-baseline justify-between">
+              <h2 className="font-serif text-4xl md:text-5xl font-normal text-foreground tracking-tight">Destaques</h2>
+              <Link href="/artigos" className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors">
+                Ver Todos
+              </Link>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/60">
               {secondaryFeatured.map((post) => (
                 <article key={post.id} className="group relative py-8 md:py-10 md:px-8 first:pl-0 last:pr-0">
@@ -104,22 +110,23 @@ export default function Home() {
         </section>
       )}
 
+
       {/* Ebook Promo Section */}
       {(isLoadingEbooks || (featuredEbooks && featuredEbooks.length > 0)) && (
         <section className="border-t border-b border-border/60 bg-[#f5f0e8] dark:bg-card/60">
           <div className="container mx-auto px-6 md:px-12 py-16 md:py-20">
-            <div className="border-b border-border/60 pb-4 mb-12 flex justify-between items-end">
+            <div className="border-b border-border/60 pb-6 mb-12 flex justify-between items-end">
               <div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground block mb-3">
                   Recursos Cristãos
                 </span>
-                <h2 className="font-mono text-xs uppercase tracking-widest text-foreground">
+                <h2 className="font-serif text-4xl md:text-5xl font-normal text-foreground tracking-tight">
                   Loja de Ebooks
                 </h2>
               </div>
               <Link
                 href="/loja"
-                className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors"
+                className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors shrink-0 ml-6"
               >
                 Ver Todos os Títulos
               </Link>
@@ -148,11 +155,11 @@ export default function Home() {
 
       {/* Recent Posts Section */}
       <section className="container mx-auto px-6 md:px-12 py-16 md:py-24">
-        <div className="border-b border-border/60 pb-4 mb-12 flex justify-between items-end">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Publicações Recentes</h2>
+        <div className="border-b border-border/60 pb-6 mb-12 flex justify-between items-end">
+          <h2 className="font-serif text-4xl md:text-5xl font-normal text-foreground tracking-tight">Publicações Recentes</h2>
           <Link
             href="/artigos"
-            className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors"
+            className="font-mono text-[10px] uppercase tracking-widest text-primary border-b border-transparent hover:border-primary transition-colors shrink-0 ml-6"
             data-testid="link-ver-arquivo"
           >
             Ver Arquivo Completo
