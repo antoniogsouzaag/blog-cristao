@@ -50,6 +50,7 @@ export default function AdminLogin() {
             <label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block">Email</label>
             <Input
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -62,6 +63,7 @@ export default function AdminLogin() {
             <label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground block">Senha</label>
             <Input
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

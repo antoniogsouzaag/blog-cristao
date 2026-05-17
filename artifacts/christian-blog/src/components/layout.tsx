@@ -23,7 +23,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/categorias" className="hover:text-primary transition-colors">Categorias</Link>
               <Link href="/loja" className="hover:text-primary transition-colors">Loja</Link>
               <Link href="/sobre" className="hover:text-primary transition-colors">Sobre</Link>
-              <Link href="/admin" className="hover:text-primary transition-colors">Admin</Link>
             </nav>
           </div>
         </div>
