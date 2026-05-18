@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import {
   useGetEbook,
@@ -88,11 +88,8 @@ export default function AdminEbookEditor() {
     },
   });
 
-  const initializedForId = useRef<number | null>(null);
-
   useEffect(() => {
-    if (isEditing && ebook && initializedForId.current !== ebook.id) {
-      initializedForId.current = ebook.id;
+    if (isEditing && ebook) {
       form.reset({
         title: ebook.title,
         description: ebook.description,
@@ -108,7 +105,8 @@ export default function AdminEbookEditor() {
         pageCount: ebook.pageCount ?? undefined,
       });
     }
-  }, [ebook, isEditing, form]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ebook?.id]);
 
   const onSubmit = (values: z.infer<typeof ebookSchema>) => {
     const slug = generateSlug(values.title);
@@ -140,7 +138,7 @@ export default function AdminEbookEditor() {
     }
   };
 
-  if (isEditing && isLoadingEbook) {
+  if (isEditing && (isLoadingEbook || !ebook)) {
     return (
       <div className="container mx-auto px-6 py-32 text-center">
         <p className="font-serif italic text-muted-foreground text-xl animate-pulse">

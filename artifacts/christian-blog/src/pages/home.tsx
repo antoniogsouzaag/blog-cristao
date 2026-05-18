@@ -11,7 +11,7 @@ export default function Home() {
   const { data: featuredEbooks, isLoading: isLoadingEbooks } = useListEbooks({ featured: true });
 
   const primaryFeatured = featuredPosts?.[0];
-  const secondaryFeatured = featuredPosts?.slice(1, 4) || [];
+  const secondaryFeatured = featuredPosts?.slice(0, 3) || [];
   const sortedRecent = recentPosts
     ? [...recentPosts].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     : undefined;
@@ -125,7 +125,7 @@ export default function Home() {
                   Acervo Fonte Viva
                 </span>
                 <h2 className="font-serif text-4xl md:text-5xl font-normal text-foreground tracking-tight">
-                  Loja de Ebooks
+                  Promoção
                 </h2>
               </div>
               <Link

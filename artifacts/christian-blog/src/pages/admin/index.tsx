@@ -31,6 +31,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+const POSTS_PER_PAGE = 10;
+const EBOOKS_PER_PAGE = 10;
+
 const categorySchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   slug: z.string().min(2, "Slug deve ter pelo menos 2 caracteres"),
@@ -50,6 +53,14 @@ export default function Admin() {
   const { toast } = useToast();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [postsPage, setPostsPage] = useState(1);
+  const [ebooksPage, setEbooksPage] = useState(1);
+
+  const totalPostPages = Math.ceil((posts?.length ?? 0) / POSTS_PER_PAGE);
+  const paginatedPosts = posts?.slice((postsPage - 1) * POSTS_PER_PAGE, postsPage * POSTS_PER_PAGE);
+
+  const totalEbookPages = Math.ceil((ebooks?.length ?? 0) / EBOOKS_PER_PAGE);
+  const paginatedEbooks = ebooks?.slice((ebooksPage - 1) * EBOOKS_PER_PAGE, ebooksPage * EBOOKS_PER_PAGE);
 
   const categoryForm = useForm<z.infer<typeof categorySchema>>({
     resolver: zodResolver(categorySchema),
@@ -154,55 +165,75 @@ export default function Admin() {
                 <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
               ))}
             </div>
-          ) : posts && posts.length > 0 ? (
-            <ul className="divide-y divide-border/40">
-              {posts.map(post => (
-                <li key={post.id} className="py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      {post.category && (
-                        <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
-                          {post.category.name}
-                        </span>
+          ) : paginatedPosts && paginatedPosts.length > 0 ? (
+            <>
+              <ul className="divide-y divide-border/40">
+                {paginatedPosts.map(post => (
+                  <li key={post.id} className="py-4 flex items-start gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
+                    {/* Thumbnail */}
+                    <div className="shrink-0 w-16 h-16 overflow-hidden border border-border/40 bg-muted/20 rounded-sm">
+                      {post.imageUrl ? (
+                        <img
+                          src={post.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          style={{ filter: "saturate(0.8)" }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="font-serif text-xl text-muted-foreground/30">A</span>
+                        </div>
                       )}
-                      {post.featured && (
-                        <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
-                          Destaque
-                        </span>
-                      )}
-                      <span className="font-mono text-[9px] text-muted-foreground/60 ml-auto sm:ml-0">
-                        {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
-                      </span>
                     </div>
-                    <h3 className="font-serif text-lg leading-snug text-foreground truncate">
-                      {post.title}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest pt-1">
-                    <Link
-                      href={`/artigos/${post.id}`}
-                      className="text-muted-foreground/60 hover:text-foreground transition-colors"
-                      target="_blank"
-                    >
-                      Ver
-                    </Link>
-                    <Link
-                      href={`/admin/editar-artigo/${post.id}`}
-                      className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
-                    >
-                      Editar
-                    </Link>
-                    <button
-                      onClick={() => handleDeletePost(post.id)}
-                      disabled={deletePost.isPending}
-                      className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
-                    >
-                      Remover
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        {post.category && (
+                          <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
+                            {post.category.name}
+                          </span>
+                        )}
+                        {post.featured && (
+                          <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
+                            Destaque
+                          </span>
+                        )}
+                        <span className="font-mono text-[9px] text-muted-foreground/50">
+                          {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
+                        </span>
+                      </div>
+                      <h3 className="font-serif text-base leading-snug text-foreground truncate">
+                        {post.title}
+                      </h3>
+                      <div className="flex items-center gap-4 mt-2 font-mono text-[10px] uppercase tracking-widest">
+                        <Link
+                          href={`/artigos/${post.id}`}
+                          className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                          target="_blank"
+                        >
+                          Ver
+                        </Link>
+                        <Link
+                          href={`/admin/editar-artigo/${post.id}`}
+                          className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
+                        >
+                          Editar
+                        </Link>
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          disabled={deletePost.isPending}
+                          className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
+                        >
+                          Remover
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Pagination page={postsPage} total={totalPostPages} onChange={p => { setPostsPage(p); }} />
+            </>
           ) : (
             <div className="py-16 text-center border border-border/40 border-dashed">
               <p className="font-serif italic text-muted-foreground text-sm">O arquivo está vazio no momento.</p>
@@ -343,66 +374,110 @@ export default function Admin() {
               <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
             ))}
           </div>
-        ) : ebooks && ebooks.length > 0 ? (
-          <ul className="divide-y divide-border/40 border-t border-border">
-            {ebooks.map(ebook => (
-              <li key={ebook.id} className="py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    {ebook.category && (
-                      <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
-                        {ebook.category}
-                      </span>
-                    )}
-                    {ebook.featured && (
-                      <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
-                        Destaque
-                      </span>
-                    )}
-                    {ebook.onSale && (
-                      <span className="font-mono text-[8px] uppercase tracking-widest bg-amber-500/10 text-amber-600 px-1.5 py-0.5 border border-amber-500/20">
-                        Promoção
-                      </span>
+        ) : paginatedEbooks && paginatedEbooks.length > 0 ? (
+          <>
+            <ul className="divide-y divide-border/40 border-t border-border">
+              {paginatedEbooks.map(ebook => (
+                <li key={ebook.id} className="py-4 flex items-start gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
+                  {/* Cover thumbnail */}
+                  <div className="shrink-0 w-11 h-16 overflow-hidden border border-border/40 bg-muted/20 rounded-sm">
+                    {ebook.coverUrl ? (
+                      <img
+                        src={ebook.coverUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="font-serif text-base text-muted-foreground/30">E</span>
+                      </div>
                     )}
                   </div>
-                  <h3 className="font-serif text-lg leading-snug text-foreground truncate mb-1">
-                    {ebook.title}
-                  </h3>
-                  <p className="font-mono text-[10px] text-muted-foreground">
-                    R$ {ebook.price ?? "0,00"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 shrink-0 font-mono text-[10px] uppercase tracking-widest pt-1">
-                  <Link
-                    href={`/loja/${ebook.id}`}
-                    className="text-muted-foreground/60 hover:text-foreground transition-colors"
-                    target="_blank"
-                  >
-                    Ver
-                  </Link>
-                  <Link
-                    href={`/admin/editar-ebook/${ebook.id}`}
-                    className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => handleDeleteEbook(ebook.id)}
-                    disabled={deleteEbook.isPending}
-                    className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      {ebook.category && (
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
+                          {ebook.category}
+                        </span>
+                      )}
+                      {ebook.featured && (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
+                          Destaque
+                        </span>
+                      )}
+                      {ebook.onSale && (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-amber-500/10 text-amber-600 px-1.5 py-0.5 border border-amber-500/20">
+                          Promoção
+                        </span>
+                      )}
+                      <span className="font-mono text-[9px] text-muted-foreground/50">
+                        R$ {ebook.price ?? "0,00"}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-base leading-snug text-foreground truncate">
+                      {ebook.title}
+                    </h3>
+                    <div className="flex items-center gap-4 mt-2 font-mono text-[10px] uppercase tracking-widest">
+                      <Link
+                        href={`/loja/${ebook.id}`}
+                        className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                        target="_blank"
+                      >
+                        Ver
+                      </Link>
+                      <Link
+                        href={`/admin/editar-ebook/${ebook.id}`}
+                        className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
+                      >
+                        Editar
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteEbook(ebook.id)}
+                        disabled={deleteEbook.isPending}
+                        className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <Pagination page={ebooksPage} total={totalEbookPages} onChange={p => { setEbooksPage(p); }} />
+          </>
         ) : (
           <div className="py-16 text-center border border-border/40 border-dashed">
             <p className="font-serif italic text-muted-foreground text-sm">O acervo de ebooks está vazio no momento.</p>
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function Pagination({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) {
+  if (total <= 1) return null;
+  return (
+    <div className="flex items-center justify-between mt-6 pt-5 border-t border-border/40 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        className="hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed pb-0.5 border-b border-transparent hover:border-foreground"
+      >
+        ← Anterior
+      </button>
+      <span className="tabular-nums">
+        {page} / {total}
+      </span>
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page >= total}
+        className="hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed pb-0.5 border-b border-transparent hover:border-foreground"
+      >
+        Próxima →
+      </button>
     </div>
   );
 }

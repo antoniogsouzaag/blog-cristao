@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { 
   useGetPost, 
@@ -67,11 +67,8 @@ export default function AdminPostEditor() {
     },
   });
 
-  const initializedForId = useRef<number | null>(null);
-
   useEffect(() => {
-    if (isEditing && post && initializedForId.current !== post.id) {
-      initializedForId.current = post.id;
+    if (isEditing && post) {
       form.reset({
         title: post.title,
         content: post.content,
@@ -84,7 +81,8 @@ export default function AdminPostEditor() {
         categoryId: post.categoryId,
       });
     }
-  }, [post, isEditing, form]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post?.id]);
 
   const onSubmit = (values: z.infer<typeof postSchema>) => {
     const generatedSlug = values.title
@@ -125,7 +123,7 @@ export default function AdminPostEditor() {
     }
   };
 
-  if (isEditing && isLoadingPost) {
+  if (isEditing && (isLoadingPost || !post)) {
     return (
       <div className="container mx-auto px-6 py-32 text-center">
         <p className="font-serif italic text-muted-foreground text-xl animate-pulse">
