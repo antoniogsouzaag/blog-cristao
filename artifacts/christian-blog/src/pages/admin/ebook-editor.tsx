@@ -370,14 +370,17 @@ export default function AdminEbookEditor() {
                 name="fileUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">URL de Download (Opcional)</FormLabel>
+                    <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Link do Checkout (Opcional)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="https://..."
+                        placeholder="https://pay.hotmart.com/..."
                         className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                         {...field}
                       />
                     </FormControl>
+                    <p className="font-mono text-[10px] text-muted-foreground/60 mt-1">
+                      O visitante sera redirecionado para este link ao clicar em "Adquirir Agora".
+                    </p>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
                 )}

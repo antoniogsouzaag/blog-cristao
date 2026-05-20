@@ -86,7 +86,7 @@ export default function EbookDetail() {
 
             {/* Mobile price + CTA (shown below cover on mobile) */}
             <div className="w-full md:hidden">
-              <PriceCTA price={price} originalPrice={originalPrice} isFree={isFree} />
+              <PriceCTA price={price} originalPrice={originalPrice} isFree={isFree} checkoutUrl={ebook.fileUrl} />
             </div>
           </div>
 
@@ -134,7 +134,7 @@ export default function EbookDetail() {
 
             {/* Desktop price + CTA */}
             <div className="hidden md:block">
-              <PriceCTA price={price} originalPrice={originalPrice} isFree={isFree} />
+              <PriceCTA price={price} originalPrice={originalPrice} isFree={isFree} checkoutUrl={ebook.fileUrl} />
             </div>
           </div>
         </div>
@@ -156,11 +156,19 @@ function PriceCTA({
   price,
   originalPrice,
   isFree,
+  checkoutUrl,
 }: {
   price: number;
   originalPrice: number | null;
   isFree: boolean;
+  checkoutUrl?: string | null;
 }) {
+  const handleCheckout = () => {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    }
+  };
+
   return (
     <div className="flex items-center gap-6">
       <div>
@@ -179,7 +187,11 @@ function PriceCTA({
           </div>
         )}
       </div>
-      <button className="font-mono text-[10px] uppercase tracking-widest bg-foreground text-background px-8 py-3 hover:bg-primary hover:text-background transition-all duration-200">
+      <button
+        onClick={handleCheckout}
+        disabled={!checkoutUrl}
+        className="font-mono text-[10px] uppercase tracking-widest bg-foreground text-background px-8 py-3 hover:bg-primary hover:text-background transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
         {isFree ? "Baixar Gratis" : "Adquirir Agora"}
       </button>
     </div>

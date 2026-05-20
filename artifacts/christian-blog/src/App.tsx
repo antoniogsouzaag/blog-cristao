@@ -37,6 +37,7 @@ import AdminEbookEditor from "@/pages/admin/ebook-editor";
 import AdminLogin from "@/pages/admin/login";
 import Store from "@/pages/store";
 import EbookDetail from "@/pages/ebook-detail";
+import PurchaseSuccess from "@/pages/purchase-success";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ function Router() {
         <Route path="/categorias" component={Categories} />
         <Route path="/sobre" component={About} />
         <Route path="/loja" component={Store} />
+        <Route path="/loja/sucesso" component={PurchaseSuccess} />
         <Route path="/loja/:id" component={EbookDetail} />
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin">
