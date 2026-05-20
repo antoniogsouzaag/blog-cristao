@@ -110,10 +110,17 @@ export default function AdminEbookEditor() {
 
   const onSubmit = (values: z.infer<typeof ebookSchema>) => {
     const slug = generateSlug(values.title);
+    const payload = {
+      ...values,
+      price: values.price || "0",
+      coverUrl: values.coverUrl || undefined,
+      fileUrl: values.fileUrl || undefined,
+      originalPrice: values.originalPrice || undefined,
+    };
 
     if (isEditing && ebookId) {
       updateEbook.mutate(
-        { ebookId: ebookId, data: { ...values, slug: ebook?.slug ?? slug } },
+        { ebookId: ebookId, data: { ...payload, slug: ebook?.slug ?? slug } },
         {
           onSuccess: () => {
             toast({ title: "Ebook atualizado com sucesso." });
@@ -125,7 +132,7 @@ export default function AdminEbookEditor() {
       );
     } else {
       createEbook.mutate(
-        { data: { ...values, slug } },
+        { data: { ...payload, slug } },
         {
           onSuccess: () => {
             toast({ title: "Ebook registrado no acervo com sucesso." });
@@ -345,7 +352,7 @@ export default function AdminEbookEditor() {
 
             {/* URLs */}
             <div className="space-y-8 pb-10 border-b border-border/50">
-              <h3 className="font-serif italic text-xl text-foreground/80">Mídia e Arquivos</h3>
+              <h3 className="font-serif italic text-xl text-foreground/80">Mídia e Links</h3>
 
               <FormField
                 control={form.control}

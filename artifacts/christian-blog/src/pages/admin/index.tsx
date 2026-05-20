@@ -412,6 +412,15 @@ export default function Admin() {
                           Promoção
                         </span>
                       )}
+                      {ebook.fileUrl ? (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-green-500/10 text-green-600 px-1.5 py-0.5 border border-green-500/20">
+                          Checkout
+                        </span>
+                      ) : (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-muted/40 text-muted-foreground/50 px-1.5 py-0.5 border border-border/30">
+                          Sem link
+                        </span>
+                      )}
                       <span className="font-mono text-[9px] text-muted-foreground/50">
                         R$ {ebook.price ?? "0,00"}
                       </span>

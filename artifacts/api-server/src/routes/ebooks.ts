@@ -69,11 +69,11 @@ router.post("/ebooks", async (req, res) => {
     description: data.description,
     excerpt: data.excerpt,
     authorName: data.authorName,
-    coverUrl: data.coverUrl ?? null,
-    price: data.price ?? "0",
-    originalPrice: data.originalPrice ?? null,
-    fileUrl: data.fileUrl ?? null,
-    category: data.category ?? "geral",
+    coverUrl: data.coverUrl || null,
+    price: data.price || "0",
+    originalPrice: data.originalPrice || null,
+    fileUrl: data.fileUrl || null,
+    category: data.category || "geral",
     featured: data.featured ?? false,
     onSale: data.onSale ?? false,
     pageCount: data.pageCount ?? null,
@@ -101,10 +101,10 @@ router.patch("/ebooks/:ebookId", async (req, res) => {
   if (b.description !== undefined) updates.description = b.description;
   if (b.excerpt !== undefined) updates.excerpt = b.excerpt;
   if (b.authorName !== undefined) updates.authorName = b.authorName;
-  if (b.coverUrl !== undefined) updates.coverUrl = b.coverUrl;
-  if (b.price !== undefined) updates.price = b.price;
-  if (b.originalPrice !== undefined) updates.originalPrice = b.originalPrice;
-  if (b.fileUrl !== undefined) updates.fileUrl = b.fileUrl;
+  if (b.coverUrl !== undefined) updates.coverUrl = b.coverUrl || null;
+  if (b.price !== undefined) updates.price = b.price || "0";
+  if (b.originalPrice !== undefined) updates.originalPrice = b.originalPrice || null;
+  if (b.fileUrl !== undefined) updates.fileUrl = b.fileUrl || null;
   if (b.category !== undefined) updates.category = b.category;
   if (b.featured !== undefined) updates.featured = b.featured;
   if (b.onSale !== undefined) updates.onSale = b.onSale;
