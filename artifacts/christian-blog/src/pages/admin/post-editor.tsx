@@ -178,7 +178,11 @@ export default function AdminPostEditor() {
                       >
                         <FormControl>
                           <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-2 font-serif text-lg h-10 shadow-none">
-                            <SelectValue placeholder="Escolha um tema..." />
+                            <SelectValue placeholder="Escolha um tema...">
+                              {field.value
+                                ? (categories?.find((c: { id: number; name: string }) => c.id === field.value)?.name ?? undefined)
+                                : undefined}
+                            </SelectValue>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-none border-border bg-background">

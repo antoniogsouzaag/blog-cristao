@@ -204,7 +204,11 @@ export default function AdminEbookEditor() {
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-2 font-serif text-lg h-10 shadow-none">
-                            <SelectValue placeholder="Escolha uma categoria..." />
+                            <SelectValue placeholder="Escolha uma categoria...">
+                              {field.value
+                                ? (CATEGORY_OPTIONS.find(o => o.value === field.value)?.label ?? field.value)
+                                : undefined}
+                            </SelectValue>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-none border-border bg-background">

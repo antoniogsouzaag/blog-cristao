@@ -5,9 +5,6 @@ import {
   useListPosts,
   useDeletePost,
   getListPostsQueryKey,
-  useListCategories,
-  useCreateCategory,
-  getListCategoriesQueryKey,
   useListEbooks,
   useDeleteEbook,
   getListEbooksQueryKey,
@@ -17,42 +14,20 @@ import { ptBR } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 
 const POSTS_PER_PAGE = 10;
 const EBOOKS_PER_PAGE = 10;
 
-const categorySchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  slug: z.string().min(2, "Slug deve ter pelo menos 2 caracteres"),
-  description: z.string().optional(),
-});
-
 export default function Admin() {
   const { signOut } = useAuth();
   const { data: posts, isLoading: isLoadingPosts } = useListPosts();
-  const { data: categories, isLoading: isLoadingCategories } = useListCategories();
   const { data: ebooks, isLoading: isLoadingEbooks } = useListEbooks({});
 
   const deletePost = useDeletePost();
   const deleteEbook = useDeleteEbook();
-  const createCategory = useCreateCategory();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [postsPage, setPostsPage] = useState(1);
   const [ebooksPage, setEbooksPage] = useState(1);
 
@@ -62,13 +37,8 @@ export default function Admin() {
   const totalEbookPages = Math.ceil((ebooks?.length ?? 0) / EBOOKS_PER_PAGE);
   const paginatedEbooks = ebooks?.slice((ebooksPage - 1) * EBOOKS_PER_PAGE, ebooksPage * EBOOKS_PER_PAGE);
 
-  const categoryForm = useForm<z.infer<typeof categorySchema>>({
-    resolver: zodResolver(categorySchema),
-    defaultValues: { name: "", slug: "", description: "" },
-  });
-
   const handleDeletePost = (id: number) => {
-    if (confirm("Tem certeza que deseja arquivar este manuscrito? Esta ação é irreversível.")) {
+    if (confirm("Tem certeza que deseja remover este manuscrito? Esta ação é irreversível.")) {
       deletePost.mutate(
         { id },
         {
@@ -101,23 +71,6 @@ export default function Admin() {
     }
   };
 
-  const onSubmitCategory = (values: z.infer<typeof categorySchema>) => {
-    createCategory.mutate(
-      { data: values },
-      {
-        onSuccess: () => {
-          toast({ title: "Nova coleção criada com sucesso." });
-          queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
-          setIsCategoryDialogOpen(false);
-          categoryForm.reset();
-        },
-        onError: () => {
-          toast({ variant: "destructive", title: "Erro ao criar coleção." });
-        },
-      }
-    );
-  };
-
   return (
     <div className="container mx-auto px-6 py-16 max-w-6xl animate-in fade-in duration-1000">
 
@@ -146,207 +99,96 @@ export default function Admin() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
-
-        {/* Posts List */}
-        <section>
-          <div className="border-b border-border pb-4 mb-6 flex justify-between items-baseline">
-            <h2 className="font-serif italic text-2xl text-foreground">Artigos</h2>
-            {!isLoadingPosts && posts && (
-              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
-              </span>
-            )}
-          </div>
-
-          {isLoadingPosts ? (
-            <div className="space-y-px">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
-              ))}
-            </div>
-          ) : paginatedPosts && paginatedPosts.length > 0 ? (
-            <>
-              <ul className="divide-y divide-border/40">
-                {paginatedPosts.map(post => (
-                  <li key={post.id} className="py-4 flex items-start gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
-                    {/* Thumbnail */}
-                    <div className="shrink-0 w-16 h-16 overflow-hidden border border-border/40 bg-muted/20 rounded-sm">
-                      {post.imageUrl ? (
-                        <img
-                          src={post.imageUrl}
-                          alt=""
-                          className="w-full h-full object-cover"
-                          style={{ filter: "saturate(0.8)" }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="font-serif text-xl text-muted-foreground/30">A</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        {post.category && (
-                          <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
-                            {post.category.name}
-                          </span>
-                        )}
-                        {post.featured && (
-                          <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
-                            Destaque
-                          </span>
-                        )}
-                        <span className="font-mono text-[9px] text-muted-foreground/50">
-                          {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
-                        </span>
-                      </div>
-                      <h3 className="font-serif text-base leading-snug text-foreground truncate">
-                        {post.title}
-                      </h3>
-                      <div className="flex items-center gap-4 mt-2 font-mono text-[10px] uppercase tracking-widest">
-                        <Link
-                          href={`/artigos/${post.id}`}
-                          className="text-muted-foreground/50 hover:text-foreground transition-colors"
-                          target="_blank"
-                        >
-                          Ver
-                        </Link>
-                        <Link
-                          href={`/admin/editar-artigo/${post.id}`}
-                          className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
-                        >
-                          Editar
-                        </Link>
-                        <button
-                          onClick={() => handleDeletePost(post.id)}
-                          disabled={deletePost.isPending}
-                          className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
-                        >
-                          Remover
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <Pagination page={postsPage} total={totalPostPages} onChange={p => { setPostsPage(p); }} />
-            </>
-          ) : (
-            <div className="py-16 text-center border border-border/40 border-dashed">
-              <p className="font-serif italic text-muted-foreground text-sm">O arquivo está vazio no momento.</p>
-            </div>
+      {/* Posts List */}
+      <section>
+        <div className="border-b border-border pb-4 mb-6 flex justify-between items-baseline">
+          <h2 className="font-serif italic text-2xl text-foreground">Artigos</h2>
+          {!isLoadingPosts && posts && (
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
+            </span>
           )}
-        </section>
+        </div>
 
-        {/* Sidebar: Categories */}
-        <aside>
-          <div className="border-b border-border pb-4 mb-6 flex justify-between items-baseline">
-            <h2 className="font-serif italic text-2xl text-foreground">Coleções</h2>
-            <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-              <DialogTrigger asChild>
-                <button className="font-mono text-[10px] uppercase tracking-widest text-primary pb-0.5 border-b border-transparent hover:border-primary transition-colors">
-                  + Nova
-                </button>
-              </DialogTrigger>
-              <DialogContent className="rounded-none border-border bg-background p-8 max-w-md">
-                <DialogHeader className="mb-6">
-                  <DialogTitle className="font-serif text-2xl font-normal">Criar Nova Coleção</DialogTitle>
-                </DialogHeader>
-                <Form {...categoryForm}>
-                  <form onSubmit={categoryForm.handleSubmit(onSubmitCategory)} className="space-y-6">
-                    <FormField
-                      control={categoryForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Ex: Devocionais"
-                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-serif text-lg"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="font-mono text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={categoryForm.control}
-                      name="slug"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Identificador (URL)</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="ex-devocionais"
-                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="font-mono text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={categoryForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Descrição</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-sans font-light resize-y"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="font-mono text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="submit"
-                      className="w-full bg-transparent text-foreground border border-border hover:bg-muted/50 hover:text-primary transition-colors font-mono text-xs uppercase tracking-widest rounded-none h-12 mt-4"
-                      disabled={createCategory.isPending}
-                    >
-                      {createCategory.isPending ? "Registrando..." : "Registrar Coleção"}
-                    </Button>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
+        {isLoadingPosts ? (
+          <div className="space-y-px">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-20 bg-muted/10 animate-pulse border-b border-border/30" />
+            ))}
           </div>
-
-          {isLoadingCategories ? (
-            <div className="space-y-px">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-12 bg-muted/10 animate-pulse border-b border-border/30" />
-              ))}
-            </div>
-          ) : categories && categories.length > 0 ? (
+        ) : paginatedPosts && paginatedPosts.length > 0 ? (
+          <>
             <ul className="divide-y divide-border/40">
-              {categories.map(category => (
-                <li key={category.id} className="py-3.5 flex justify-between items-center gap-3">
-                  <div className="min-w-0">
-                    <p className="font-serif text-base text-foreground leading-tight truncate">{category.name}</p>
-                    <p className="font-mono text-[9px] text-muted-foreground/50 mt-0.5">{category.slug}</p>
+              {paginatedPosts.map(post => (
+                <li key={post.id} className="py-4 flex items-start gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
+                  <div className="shrink-0 w-16 h-16 overflow-hidden border border-border/40 bg-muted/20 rounded-sm">
+                    {post.imageUrl ? (
+                      <img
+                        src={post.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        style={{ filter: "saturate(0.8)" }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="font-serif text-xl text-muted-foreground/30">A</span>
+                      </div>
+                    )}
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground shrink-0 tabular-nums">
-                    {category.postCount} {category.postCount === 1 ? "item" : "itens"}
-                  </span>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      {post.category && (
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-primary/70">
+                          {post.category.name}
+                        </span>
+                      )}
+                      {post.featured && (
+                        <span className="font-mono text-[8px] uppercase tracking-widest bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/20">
+                          Destaque
+                        </span>
+                      )}
+                      <span className="font-mono text-[9px] text-muted-foreground/50">
+                        {format(new Date(post.publishedAt), "dd MMM yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-base leading-snug text-foreground truncate">
+                      {post.title}
+                    </h3>
+                    <div className="flex items-center gap-4 mt-2 font-mono text-[10px] uppercase tracking-widest">
+                      <Link
+                        href={`/artigos/${post.id}`}
+                        className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                        target="_blank"
+                      >
+                        Ver
+                      </Link>
+                      <Link
+                        href={`/admin/editar-artigo/${post.id}`}
+                        className="text-foreground hover:text-primary transition-colors pb-0.5 border-b border-transparent hover:border-primary"
+                      >
+                        Editar
+                      </Link>
+                      <button
+                        onClick={() => handleDeletePost(post.id)}
+                        disabled={deletePost.isPending}
+                        className="text-muted-foreground hover:text-destructive transition-colors pb-0.5 border-b border-transparent hover:border-destructive disabled:opacity-40"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
-          ) : (
-            <div className="py-10 text-center border border-border/40 border-dashed">
-              <p className="font-serif italic text-muted-foreground text-sm">Nenhuma coleção criada.</p>
-            </div>
-          )}
-        </aside>
-      </div>
+            <Pagination page={postsPage} total={totalPostPages} onChange={p => setPostsPage(p)} />
+          </>
+        ) : (
+          <div className="py-16 text-center border border-border/40 border-dashed">
+            <p className="font-serif italic text-muted-foreground text-sm">O arquivo está vazio no momento.</p>
+          </div>
+        )}
+      </section>
 
       {/* Ebooks Section */}
       <section className="mt-20 pt-12 border-t border-border">
@@ -379,14 +221,9 @@ export default function Admin() {
             <ul className="divide-y divide-border/40 border-t border-border">
               {paginatedEbooks.map(ebook => (
                 <li key={ebook.id} className="py-4 flex items-start gap-4 group hover:bg-muted/5 transition-colors -mx-3 px-3 rounded">
-                  {/* Cover thumbnail */}
                   <div className="shrink-0 w-11 h-16 overflow-hidden border border-border/40 bg-muted/20 rounded-sm">
                     {ebook.coverUrl ? (
-                      <img
-                        src={ebook.coverUrl}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={ebook.coverUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="font-serif text-base text-muted-foreground/30">E</span>
@@ -394,7 +231,6 @@ export default function Admin() {
                     )}
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       {ebook.category && (
@@ -454,7 +290,7 @@ export default function Admin() {
                 </li>
               ))}
             </ul>
-            <Pagination page={ebooksPage} total={totalEbookPages} onChange={p => { setEbooksPage(p); }} />
+            <Pagination page={ebooksPage} total={totalEbookPages} onChange={p => setEbooksPage(p)} />
           </>
         ) : (
           <div className="py-16 text-center border border-border/40 border-dashed">
