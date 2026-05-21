@@ -117,25 +117,30 @@ export default function EbookDetail() {
 
             <div className="w-12 h-px bg-border mb-8" />
 
-            <p className="font-sans font-light text-foreground/70 leading-relaxed text-base mb-8">
+            <p className="font-sans font-light text-foreground/70 leading-relaxed text-base mb-10">
               {ebook.description}
             </p>
-
-            {/* Metadata table */}
-            <div className="border border-border/50 divide-y divide-border/50 mb-10">
-              {ebook.pageCount && (
-                <MetaRow label="Paginas" value={`${ebook.pageCount} paginas`} />
-              )}
-              <MetaRow label="Autor" value={ebook.authorName} />
-              <MetaRow label="Categoria" value={ebook.category} />
-              <MetaRow label="Formato" value="PDF Digital" />
-              <MetaRow label="Idioma" value="Portugues (Brasil)" />
-            </div>
 
             {/* Desktop price + CTA */}
             <div className="hidden md:block">
               <PriceCTA price={price} originalPrice={originalPrice} isFree={isFree} checkoutUrl={ebook.fileUrl} />
             </div>
+          </div>
+        </div>
+
+        {/* Detalhes */}
+        <div className="mt-20 pt-12 border-t border-border/60">
+          <h2 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-6">
+            Detalhes
+          </h2>
+          <div className="border border-border/50 divide-y divide-border/50 max-w-lg">
+            {ebook.pageCount && (
+              <MetaRow label="Páginas" value={`${ebook.pageCount} páginas`} />
+            )}
+            <MetaRow label="Autor" value={ebook.authorName} />
+            <MetaRow label="Categoria" value={ebook.category} />
+            <MetaRow label="Formato" value="PDF Digital" />
+            <MetaRow label="Idioma" value="Português (Brasil)" />
           </div>
         </div>
       </div>

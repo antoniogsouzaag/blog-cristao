@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import {
   useGetEbook,
@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 
-const CATEGORY_OPTIONS = [
+export const CATEGORY_OPTIONS = [
   { value: "geral", label: "Geral" },
   { value: "devocional", label: "Devocional" },
   { value: "oracao", label: "Oração" },
@@ -54,25 +54,77 @@ function generateSlug(title: string): string {
     .replace(/\s+/g, "-");
 }
 
+function normalizeDecimal(val?: string | null): string | undefined {
+  if (!val) return undefined;
+  return val.replace(",", ".");
+}
+
+type EbookData = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  excerpt: string;
+  authorName: string;
+  coverUrl?: string | null;
+  price?: string | null;
+  originalPrice?: string | null;
+  fileUrl?: string | null;
+  category: string;
+  featured?: boolean | null;
+  onSale?: boolean | null;
+  pageCount?: number | null;
+};
+
+// Outer component: only handles data fetching and loading guard
 export default function AdminEbookEditor() {
   const { id } = useParams<{ id?: string }>();
   const isEditing = !!id;
   const ebookId = isEditing ? Number(id) : undefined;
 
+  const { data: ebook, isLoading } = useGetEbook(ebookId as number, {
+    query: { enabled: isEditing, queryKey: ["ebook", ebookId] },
+  });
+
+  if (isEditing && (isLoading || !ebook)) {
+    return (
+      <div className="container mx-auto px-6 py-32 text-center">
+        <p className="font-serif italic text-muted-foreground text-xl animate-pulse">
+          Recuperando ebook do acervo...
+        </p>
+      </div>
+    );
+  }
+
+  return <EbookForm ebook={ebook as EbookData | undefined} />;
+}
+
+// Inner component: mounts only after data is ready, so defaultValues are correct from the start
+function EbookForm({ ebook }: { ebook?: EbookData }) {
+  const isEditing = !!ebook;
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const { data: ebook, isLoading: isLoadingEbook } = useGetEbook(ebookId as number, {
-    query: { enabled: isEditing, queryKey: ["ebook", ebookId] },
-  });
 
   const createEbook = useCreateEbook();
   const updateEbook = useUpdateEbook();
 
   const form = useForm<z.infer<typeof ebookSchema>>({
     resolver: zodResolver(ebookSchema),
-    defaultValues: {
+    defaultValues: ebook ? {
+      title: ebook.title,
+      description: ebook.description,
+      excerpt: ebook.excerpt,
+      authorName: ebook.authorName,
+      coverUrl: ebook.coverUrl || "",
+      price: ebook.price ?? "0",
+      originalPrice: ebook.originalPrice || "",
+      fileUrl: ebook.fileUrl || "",
+      category: ebook.category,
+      featured: ebook.featured ?? false,
+      onSale: ebook.onSale ?? false,
+      pageCount: ebook.pageCount ?? undefined,
+    } : {
       title: "",
       description: "",
       excerpt: "",
@@ -86,35 +138,21 @@ export default function AdminEbookEditor() {
       onSale: false,
       pageCount: undefined,
     },
-    values: isEditing && ebook ? {
-      title: ebook.title,
-      description: ebook.description,
-      excerpt: ebook.excerpt,
-      authorName: ebook.authorName,
-      coverUrl: ebook.coverUrl || "",
-      price: ebook.price ?? "0",
-      originalPrice: ebook.originalPrice || "",
-      fileUrl: ebook.fileUrl || "",
-      category: ebook.category,
-      featured: ebook.featured ?? false,
-      onSale: ebook.onSale ?? false,
-      pageCount: ebook.pageCount ?? undefined,
-    } : undefined,
   });
 
   const onSubmit = (values: z.infer<typeof ebookSchema>) => {
     const slug = generateSlug(values.title);
     const payload = {
       ...values,
-      price: values.price || "0",
+      price: normalizeDecimal(values.price) || "0",
+      originalPrice: normalizeDecimal(values.originalPrice) || undefined,
       coverUrl: values.coverUrl || undefined,
       fileUrl: values.fileUrl || undefined,
-      originalPrice: values.originalPrice || undefined,
     };
 
-    if (isEditing && ebookId) {
+    if (isEditing && ebook) {
       updateEbook.mutate(
-        { ebookId: ebookId, data: { ...payload, slug: ebook?.slug ?? slug } },
+        { ebookId: ebook.id, data: { ...payload, slug: ebook.slug ?? slug } },
         {
           onSuccess: () => {
             toast({ title: "Ebook atualizado com sucesso." });
@@ -139,16 +177,6 @@ export default function AdminEbookEditor() {
     }
   };
 
-  if (isEditing && (isLoadingEbook || !ebook)) {
-    return (
-      <div className="container mx-auto px-6 py-32 text-center">
-        <p className="font-serif italic text-muted-foreground text-xl animate-pulse">
-          Recuperando ebook do acervo...
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-6 py-16 max-w-4xl animate-in fade-in duration-1000">
       <div className="mb-12">
@@ -167,14 +195,13 @@ export default function AdminEbookEditor() {
       </div>
 
       <div className="border border-border bg-background/50 p-8 md:p-12 relative">
-        {/* Corner styling */}
         <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-primary/20" />
         <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-primary/20" />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
 
-            {/* Header info */}
+            {/* Identificação */}
             <div className="space-y-8 pb-10 border-b border-border/50">
               <FormField
                 control={form.control}
@@ -201,7 +228,7 @@ export default function AdminEbookEditor() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Categoria</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-transparent border-0 border-b border-border/50 rounded-none focus:ring-0 focus:border-primary px-2 font-serif text-lg h-10 shadow-none">
                             <SelectValue placeholder="Escolha uma categoria...">
@@ -262,9 +289,10 @@ export default function AdminEbookEditor() {
               />
             </div>
 
-            {/* Pricing */}
+            {/* Precificação */}
             <div className="space-y-8 pb-10 border-b border-border/50">
               <h3 className="font-serif italic text-xl text-foreground/80">Precificação</h3>
+              <p className="font-mono text-[10px] text-muted-foreground/60 -mt-4">Use ponto como separador decimal: 19.90</p>
               <div className="grid gap-8 md:grid-cols-3">
                 <FormField
                   control={form.control}
@@ -274,7 +302,7 @@ export default function AdminEbookEditor() {
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Preço (R$)</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='0 ou "19.90"'
+                          placeholder="0 ou 19.90"
                           className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                           {...field}
                         />
@@ -292,7 +320,7 @@ export default function AdminEbookEditor() {
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Preço Original (Opcional)</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='"34.90"'
+                          placeholder="34.90"
                           className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
                           {...field}
                         />
@@ -325,16 +353,14 @@ export default function AdminEbookEditor() {
               </div>
             </div>
 
-            {/* Description */}
+            {/* Descrição */}
             <div className="space-y-8 pb-10 border-b border-border/50">
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex justify-between items-end mb-4">
-                      <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Descrição Completa</FormLabel>
-                    </div>
+                    <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Descrição Completa</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Descrição detalhada do conteúdo do ebook..."
@@ -348,7 +374,7 @@ export default function AdminEbookEditor() {
               />
             </div>
 
-            {/* URLs */}
+            {/* Mídia */}
             <div className="space-y-8 pb-10 border-b border-border/50">
               <h3 className="font-serif italic text-xl text-foreground/80">Mídia e Links</h3>
 
@@ -387,7 +413,7 @@ export default function AdminEbookEditor() {
                       />
                     </FormControl>
                     <p className="font-mono text-[10px] text-muted-foreground/60 mt-1">
-                      O visitante sera redirecionado para este link ao clicar em "Adquirir Agora".
+                      O visitante será redirecionado para este link ao clicar em "Adquirir Agora".
                     </p>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
@@ -395,7 +421,7 @@ export default function AdminEbookEditor() {
               />
             </div>
 
-            {/* Options */}
+            {/* Opções */}
             <div className="space-y-6 pt-2">
               <FormField
                 control={form.control}

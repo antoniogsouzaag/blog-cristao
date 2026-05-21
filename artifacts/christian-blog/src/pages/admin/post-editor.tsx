@@ -1,13 +1,13 @@
 import { useParams, useLocation } from "wouter";
-import { 
-  useGetPost, 
-  useCreatePost, 
-  useUpdatePost, 
+import {
+  useGetPost,
+  useCreatePost,
+  useUpdatePost,
   useListCategories,
   getGetPostQueryKey,
   getListPostsQueryKey,
   getListFeaturedPostsQueryKey,
-  getListRecentPostsQueryKey
+  getListRecentPostsQueryKey,
 } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,26 +34,67 @@ const postSchema = z.object({
   categoryId: z.coerce.number().min(1, "Categoria obrigatória"),
 });
 
+type PostData = {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  authorName: string;
+  imageUrl?: string | null;
+  bibleVerse?: string | null;
+  bibleReference?: string | null;
+  featured: boolean;
+  categoryId: number;
+};
+
+// Outer component: only handles data fetching and loading guard
 export default function AdminPostEditor() {
   const { id } = useParams<{ id?: string }>();
   const isEditing = !!id && id !== "novo-artigo";
   const postId = isEditing ? Number(id) : undefined;
-  
+
+  const { data: post, isLoading } = useGetPost(postId as number, {
+    query: { enabled: isEditing, queryKey: ["post", postId] },
+  });
+
+  if (isEditing && (isLoading || !post)) {
+    return (
+      <div className="container mx-auto px-6 py-32 text-center">
+        <p className="font-serif italic text-muted-foreground text-xl animate-pulse">
+          Recuperando manuscrito dos arquivos...
+        </p>
+      </div>
+    );
+  }
+
+  return <PostForm post={post as PostData | undefined} />;
+}
+
+// Inner component: mounts only after data is ready, so defaultValues are correct from the start
+function PostForm({ post }: { post?: PostData }) {
+  const isEditing = !!post;
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: post, isLoading: isLoadingPost } = useGetPost(postId as number, { 
-    query: { enabled: isEditing, queryKey: ["post", postId] } 
-  });
   const { data: categories, isLoading: isLoadingCategories } = useListCategories();
-
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
 
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
-    defaultValues: {
+    defaultValues: post ? {
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      authorName: post.authorName,
+      imageUrl: post.imageUrl || "",
+      bibleVerse: post.bibleVerse || "",
+      bibleReference: post.bibleReference || "",
+      featured: post.featured,
+      categoryId: post.categoryId,
+    } : {
       title: "",
       content: "",
       excerpt: "",
@@ -64,17 +105,6 @@ export default function AdminPostEditor() {
       featured: false,
       categoryId: 0,
     },
-    values: isEditing && post ? {
-      title: post.title,
-      content: post.content,
-      excerpt: post.excerpt,
-      authorName: post.authorName,
-      imageUrl: post.imageUrl || "",
-      bibleVerse: post.bibleVerse || "",
-      bibleReference: post.bibleReference || "",
-      featured: post.featured,
-      categoryId: post.categoryId,
-    } : undefined,
   });
 
   const onSubmit = (values: z.infer<typeof postSchema>) => {
@@ -86,18 +116,18 @@ export default function AdminPostEditor() {
       .trim()
       .replace(/\s+/g, "-");
 
-    if (isEditing && postId) {
+    if (isEditing && post) {
       updatePost.mutate(
-        { id: postId, data: { ...values, slug: post?.slug ?? generatedSlug } },
+        { id: post.id, data: { ...values, slug: post.slug ?? generatedSlug } },
         {
           onSuccess: () => {
             toast({ title: "Manuscrito arquivado com as novas alterações." });
-            queryClient.invalidateQueries({ queryKey: getGetPostQueryKey(postId) });
+            queryClient.invalidateQueries({ queryKey: getGetPostQueryKey(post.id) });
             queryClient.invalidateQueries({ queryKey: getListPostsQueryKey() });
             queryClient.invalidateQueries({ queryKey: getListFeaturedPostsQueryKey() });
             setLocation("/admin");
           },
-          onError: () => toast({ variant: "destructive", title: "Falha ao registrar alterações." })
+          onError: () => toast({ variant: "destructive", title: "Falha ao registrar alterações." }),
         }
       );
     } else {
@@ -110,21 +140,11 @@ export default function AdminPostEditor() {
             queryClient.invalidateQueries({ queryKey: getListRecentPostsQueryKey() });
             setLocation("/admin");
           },
-          onError: () => toast({ variant: "destructive", title: "Falha ao criar o manuscrito." })
+          onError: () => toast({ variant: "destructive", title: "Falha ao criar o manuscrito." }),
         }
       );
     }
   };
-
-  if (isEditing && (isLoadingPost || !post)) {
-    return (
-      <div className="container mx-auto px-6 py-32 text-center">
-        <p className="font-serif italic text-muted-foreground text-xl animate-pulse">
-          Recuperando manuscrito dos arquivos...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-6 py-16 max-w-4xl animate-in fade-in duration-1000">
@@ -141,14 +161,13 @@ export default function AdminPostEditor() {
       </div>
 
       <div className="border border-border bg-background/50 p-8 md:p-12 relative">
-        {/* Corner styling */}
         <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-primary/20" />
         <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-primary/20" />
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
-            
-            {/* Header info */}
+
+            {/* Identificação */}
             <div className="space-y-8 pb-10 border-b border-border/50">
               <FormField
                 control={form.control}
@@ -171,9 +190,9 @@ export default function AdminPostEditor() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Coleção Temática</FormLabel>
-                      <Select 
-                        onValueChange={(val) => field.onChange(parseInt(val))} 
-                        value={field.value ? field.value.toString() : ""}
+                      <Select
+                        onValueChange={(val) => field.onChange(parseInt(val))}
+                        defaultValue={field.value ? field.value.toString() : ""}
                         disabled={isLoadingCategories}
                       >
                         <FormControl>
@@ -186,7 +205,7 @@ export default function AdminPostEditor() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-none border-border bg-background">
-                          {categories?.map(c => (
+                          {categories?.map((c: { id: number; name: string }) => (
                             <SelectItem key={c.id} value={c.id.toString()} className="font-serif font-normal">{c.name}</SelectItem>
                           ))}
                         </SelectContent>
@@ -195,6 +214,7 @@ export default function AdminPostEditor() {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="authorName"
@@ -225,7 +245,7 @@ export default function AdminPostEditor() {
               />
             </div>
 
-            {/* Content Body */}
+            {/* Conteúdo */}
             <div className="space-y-8">
               <div className="bg-muted/10 border border-border/30 p-6 md:p-8">
                 <h3 className="font-serif italic text-xl mb-6 text-foreground/80 text-center">Fundamento Bíblico</h3>
@@ -273,10 +293,10 @@ export default function AdminPostEditor() {
                       <span className="font-mono text-[10px] text-muted-foreground/60">Suporta Markdown</span>
                     </div>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Inicie sua composição aqui..." 
-                        className="bg-background border border-border/50 focus-visible:ring-0 focus-visible:border-primary font-mono text-sm leading-relaxed p-6 min-h-[500px] resize-y" 
-                        {...field} 
+                      <Textarea
+                        placeholder="Inicie sua composição aqui..."
+                        className="bg-background border border-border/50 focus-visible:ring-0 focus-visible:border-primary font-mono text-sm leading-relaxed p-6 min-h-[500px] resize-y"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage className="font-mono text-[10px]" />
@@ -294,7 +314,7 @@ export default function AdminPostEditor() {
                   <FormItem>
                     <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ilustração Principal (Opcional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="URL da imagem (http://...)" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
+                      <Input placeholder="URL da imagem (https://...)" className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm" {...field} />
                     </FormControl>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
@@ -328,8 +348,8 @@ export default function AdminPostEditor() {
               <Link href="/admin" className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors self-center border-b border-transparent hover:border-foreground pb-1">
                 Descartar Rascunho
               </Link>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={createPost.isPending || updatePost.isPending}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-mono text-[10px] uppercase tracking-widest px-8 rounded-none h-12"
               >
