@@ -36,7 +36,8 @@
       "Bash(pnpm dev *)",
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(f\\\\\"- [{p['id']}] {p['title']}\\\\\"\\) for p in data.get\\('posts', data\\) if isinstance\\(p, dict\\)]\")",
       "Bash(pnpm --filter @workspace/db seed)",
-      "Bash(pnpm --filter @workspace/christian-blog exec tsc --noEmit)"
+      "Bash(pnpm --filter @workspace/christian-blog exec tsc --noEmit)",
+      "Bash(npx tsc *)"
     ]
   }
 }

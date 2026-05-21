@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { getPostFallbackImage } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { LeadCaptureForm } from "@/components/lead-capture-form";
 
@@ -84,19 +85,17 @@ export default function Article() {
     <article className="pb-32 animate-in fade-in duration-1000">
 
       {/* Hero image — top of page */}
-      {post.imageUrl && (
-        <div className="container mx-auto px-6 md:px-12 pt-10 max-w-4xl">
-          <div className="relative w-full overflow-hidden border border-border/60" style={{ aspectRatio: "16/7", maxHeight: "460px" }}>
-            <img
-              src={post.imageUrl}
-              alt={post.title}
-              className="absolute inset-0 w-full h-full object-cover object-center"
-              style={{ filter: "saturate(0.88) contrast(0.93) brightness(0.97)" }}
-            />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 55%, rgba(var(--background-rgb,10,8,6),0.18) 100%)" }} />
-          </div>
+      <div className="container mx-auto px-6 md:px-12 pt-10 max-w-4xl">
+        <div className="relative w-full overflow-hidden border border-border/60" style={{ aspectRatio: "16/7", maxHeight: "460px" }}>
+          <img
+            src={post.imageUrl || getPostFallbackImage(post)}
+            alt={post.title}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ filter: "saturate(0.88) contrast(0.93) brightness(0.97)" }}
+          />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 55%, rgba(var(--background-rgb,10,8,6),0.18) 100%)" }} />
         </div>
-      )}
+      </div>
 
       {/* Title + excerpt */}
       <header className="container mx-auto px-6 pt-16 pb-12 max-w-4xl text-center">

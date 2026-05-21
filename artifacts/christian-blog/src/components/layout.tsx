@@ -55,9 +55,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Fixed watermark cross */}
       <div className="fixed bottom-5 right-7 z-50 pointer-events-none select-none">
-        <svg width="52" height="68" viewBox="0 0 52 68" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground/20">
-          <rect x="21" y="0" width="10" height="68" fill="currentColor" />
-          <rect x="0" y="18" width="52" height="10" fill="currentColor" />
+        <svg width="52" height="72" viewBox="0 0 52 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground/20">
+          <defs>
+            <filter id="wm-brush" x="-25%" y="-25%" width="150%" height="150%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.055 0.04" numOctaves="4" seed="7" result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+          </defs>
+          <g filter="url(#wm-brush)" fill="currentColor">
+            <rect x="21" y="0" width="10" height="72" rx="1.5"/>
+            <rect x="0" y="16" width="52" height="10" rx="1.5"/>
+          </g>
         </svg>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import {
   useGetEbook,
@@ -360,13 +360,16 @@ export default function AdminEbookEditor() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">URL da Capa (Opcional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://..."
-                        className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="flex items-start gap-6">
+                      <FormControl className="flex-1">
+                        <Input
+                          placeholder="https://..."
+                          className="bg-transparent border-0 border-b border-border/50 rounded-none focus-visible:ring-0 focus-visible:border-primary px-2 font-mono text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <CoverPreview url={field.value} />
+                    </div>
                     <FormMessage className="font-mono text-[10px]" />
                   </FormItem>
                 )}
@@ -460,6 +463,45 @@ export default function AdminEbookEditor() {
           </form>
         </Form>
       </div>
+    </div>
+  );
+}
+
+function CoverPreview({ url }: { url?: string }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+
+  useEffect(() => {
+    if (!url) { setStatus("idle"); return; }
+    setStatus("loading");
+  }, [url]);
+
+  if (!url) {
+    return (
+      <div className="shrink-0 w-20 aspect-[2/3] border border-dashed border-border/40 bg-muted/10 flex items-center justify-center">
+        <span className="font-serif text-2xl text-muted-foreground/20">E</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="shrink-0 w-20 aspect-[2/3] border border-border/50 overflow-hidden bg-muted/10 relative">
+      <img
+        src={url}
+        alt="Preview da capa"
+        className="w-full h-full object-cover"
+        onLoad={() => setStatus("ok")}
+        onError={() => setStatus("error")}
+      />
+      {status === "loading" && (
+        <div className="absolute inset-0 bg-muted/60 flex items-center justify-center">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground animate-pulse">...</span>
+        </div>
+      )}
+      {status === "error" && (
+        <div className="absolute inset-0 bg-destructive/10 border border-destructive/30 flex flex-col items-center justify-center gap-1 p-2">
+          <span className="font-mono text-[8px] uppercase tracking-widest text-destructive text-center leading-tight">URL inválida ou bloqueada</span>
+        </div>
+      )}
     </div>
   );
 }

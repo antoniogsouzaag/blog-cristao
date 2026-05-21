@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Post } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getPostFallbackImage } from "@/lib/utils";
 
 export function PostCard({ post, featured = false, compact = false }: { post: Post; featured?: boolean; compact?: boolean }) {
   if (compact) {
@@ -32,18 +33,12 @@ export function PostCard({ post, featured = false, compact = false }: { post: Po
     <article className="group relative flex flex-col gap-0 transition-all" data-testid={`card-post-${post.id}`}>
       {/* Image */}
       <div className="aspect-[4/3] w-full overflow-hidden border border-border/60 mb-5 bg-muted/20">
-        {post.imageUrl ? (
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            style={{ filter: "saturate(0.82) contrast(0.92)" }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-muted/30">
-            <span className="font-serif text-4xl text-muted-foreground/30">†</span>
-          </div>
-        )}
+        <img
+          src={post.imageUrl || getPostFallbackImage(post)}
+          alt={post.title}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          style={{ filter: "saturate(0.82) contrast(0.92)" }}
+        />
       </div>
 
       {/* Meta */}
