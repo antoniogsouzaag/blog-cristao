@@ -86,27 +86,21 @@ export default function AdminEbookEditor() {
       onSale: false,
       pageCount: undefined,
     },
+    values: isEditing && ebook ? {
+      title: ebook.title,
+      description: ebook.description,
+      excerpt: ebook.excerpt,
+      authorName: ebook.authorName,
+      coverUrl: ebook.coverUrl || "",
+      price: ebook.price ?? "0",
+      originalPrice: ebook.originalPrice || "",
+      fileUrl: ebook.fileUrl || "",
+      category: ebook.category,
+      featured: ebook.featured ?? false,
+      onSale: ebook.onSale ?? false,
+      pageCount: ebook.pageCount ?? undefined,
+    } : undefined,
   });
-
-  useEffect(() => {
-    if (isEditing && ebook) {
-      form.reset({
-        title: ebook.title,
-        description: ebook.description,
-        excerpt: ebook.excerpt,
-        authorName: ebook.authorName,
-        coverUrl: ebook.coverUrl || "",
-        price: ebook.price ?? "0",
-        originalPrice: ebook.originalPrice || "",
-        fileUrl: ebook.fileUrl || "",
-        category: ebook.category,
-        featured: ebook.featured ?? false,
-        onSale: ebook.onSale ?? false,
-        pageCount: ebook.pageCount ?? undefined,
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ebook?.id]);
 
   const onSubmit = (values: z.infer<typeof ebookSchema>) => {
     const slug = generateSlug(values.title);

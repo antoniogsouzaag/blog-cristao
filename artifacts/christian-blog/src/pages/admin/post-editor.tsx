@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { 
   useGetPost, 
@@ -65,24 +64,18 @@ export default function AdminPostEditor() {
       featured: false,
       categoryId: 0,
     },
+    values: isEditing && post ? {
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      authorName: post.authorName,
+      imageUrl: post.imageUrl || "",
+      bibleVerse: post.bibleVerse || "",
+      bibleReference: post.bibleReference || "",
+      featured: post.featured,
+      categoryId: post.categoryId,
+    } : undefined,
   });
-
-  useEffect(() => {
-    if (isEditing && post) {
-      form.reset({
-        title: post.title,
-        content: post.content,
-        excerpt: post.excerpt,
-        authorName: post.authorName,
-        imageUrl: post.imageUrl || "",
-        bibleVerse: post.bibleVerse || "",
-        bibleReference: post.bibleReference || "",
-        featured: post.featured,
-        categoryId: post.categoryId,
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [post?.id]);
 
   const onSubmit = (values: z.infer<typeof postSchema>) => {
     const generatedSlug = values.title
