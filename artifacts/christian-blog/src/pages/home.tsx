@@ -18,6 +18,8 @@ export default function Home() {
 
   return (
     <div className="animate-in fade-in duration-1000">
+      {/* A home abre direto no artigo em destaque (h2); o h1 nomeia a página. */}
+      <h1 className="sr-only">Fonte Viva — publicações cristãs que edificam a fé</h1>
 
       {/* Hero Banner Section */}
       <section className="relative w-full overflow-hidden" style={{ height: "70vh", minHeight: "480px", maxHeight: "700px" }}>
